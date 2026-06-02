@@ -3,14 +3,16 @@
 
 > [!Warning]
 > This Plugin is currently in development and therefore the text below represents the to-be and not as-is state of the Plugin.
-> For more details, see *Planned features* and the latest Release notes for more info.
+> For more details, see *Planned features* and the latest *Release notes* for more info.
 
 
 **Main configuration menu accessed by hitting F1 and then clicking the Plugin settings button**
 
+<!--
 ![plugin](screenshots/bepinEx_menu.png)
+-->
 
-This plugin outputs the positional data from a total of 100 (currently) of the 'HScenes' (sex scenes) in Honey Select 2 with full 6 degrees of freedom (6DOF) in a simple text format known as T-Code (Toy-Code) which is then sent over a serial link (COM port) to drive an open source sex robot (OSR2, OSR2+, SR6, etc).
+This plugin outputs the positional data from a total of 100 (currently) of the 'HScenes' (sex scenes) in Aicomi with full 6 degrees of freedom (6DOF) in a simple text format known as T-Code (Toy-Code) which is then sent over a serial link (COM port) to drive an open source sex robot (OSR2, OSR2+, SR6, etc).
 
 The 6 total degrees of freedom are:
 - L0 (X) Up/Down
@@ -20,7 +22,7 @@ The 6 total degrees of freedom are:
 - R1 (RY) Roll
 - R2 (RZ) Pitch
 
-The male's penis in a given HScene is always aligned with the L0 (X) Up/Down axis, and depending on the HScene/animation in Honey Select 2, 3+ specific 'bones' of the female's vagina, anus, breasts, mouth, or hands are used to calculate and export the necessary 6DOF information to drive the sex robot.
+The male's penis in a given HScene is always aligned with the L0 (X) Up/Down axis, and depending on the HScene/animation in Aicomi, 3+ specific 'bones' of the female's vagina, anus, breasts, mouth, or hands are used to calculate and export the necessary 6DOF information to drive the sex robot.
 
 The T-Code format and open source sex robots (OSR2, OSR2+, SR6) were all created/developed by TempestVR. You can find the full/free open sourced OSR2 here: https://www.patreon.com/posts/osr2-1-year-47041804
 
@@ -62,8 +64,8 @@ Missionary, VAGINAL
 
 This need to be a match with the list above, if not there will be no movement.
 For example, if the right hand is used in a handjob and the left hand is set to be tracked, there will be no movement, since the part tracked isn't moving.
-Animations that aren't listed/known can be printed in the terminal, hence why I recommend first enabling the BepInEx Logging (Plugin settings -> BepInEx -> Logging.Disk -> Enabled).
-Then, under the SexRobotController Plugin settings, enable "BepInEx Debug: Print position (console)".
+Animations that aren't listed/known can be printed in the terminal, hence why I recommend first enabling the BepInEx Logging (`Plugin settings -> BepInEx -> Logging.Disk -> Enabled`).
+Then, under the SexRobotController Plugin settings, enable `BepInEx Debug: Print position (console)`.
 
 None of the "Foreplay/Fondling" animations are included.
 
@@ -74,7 +76,7 @@ Here is an example of how an error could look like, if an invalid value was adde
   at HS2_SexRobotController.FileHandler.readPositionsFromFile () [0x0007c] in <ca2677a8d684461c82753f125094d4f9>:0
   at HS2_SexRobotController.CheckButtonAndSerialConnState () [0x0001a] in <ca2677a8d684461c82753f125094d4f9>:0
 ```
-The error can be found in the BepInEx Log (found in ""<GameDir>\BepInEx") for errors.
+The error can be found in the BepInEx Log (found in `<GameDir>\BepInEx`) for errors.
 
 
 > [!Warning]
