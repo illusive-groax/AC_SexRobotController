@@ -1,19 +1,22 @@
-# HS2_SexRobotController
-**Honey Select 2 Sex Robot Controller Plugin v1.7**
+# KKS_SexRobotcontroller
+**Koikatsu Sunshine Sex Robot Controller Plugin v1.9**
 
 **Main configuration menu accessed by hitting F1 and then clicking the Plugin settings button**
 
-![plugin](https://user-images.githubusercontent.com/93683226/141469348-13a16e15-cbf2-45cc-9ec7-334a3e93203e.png)
+![plugin](screenshots/bepinEx_menu.png)
 
 
 **Quick access buttons (works in VR) to connect / disconnect your sex robot and to increase / decrease the stroke multiplier**
 
-![pluginmenu](https://user-images.githubusercontent.com/93683226/141469532-d0db17df-e333-477b-b0db-08027204de6f.png)
+![plugin](screenshots/kks_MenuButtons.png)
 
 
 **Pressing the hotkeys or the quick access buttons to connect / disconnect your sex robot and to increase / decrease the stroke multiplier show feedback text when pressed (especially helpful in VR)**
 
-![buttonfeedback](https://user-images.githubusercontent.com/93683226/141486554-17f9b57a-e50f-435d-9612-085e2722fa70.png)
+![plugin](screenshots/kks_stateChange.png)
+
+**Separate button (within the Clothing menu) for enabling or disabling the speed limiter.**
+![plugin](screenshots/kks_ClothingMenu_limitButton.png)
 
 This plugin outputs the positional data from a total of 100 (currently) of the 'HScenes' (sex scenes) in Honey Select 2 with full 6 degrees of freedom (6DOF) in a simple text format known as T-Code (Toy-Code) which is then sent over a serial link (COM port) to drive an open source sex robot (OSR2, OSR2+, SR6, etc).
 
@@ -29,130 +32,58 @@ The male's penis in a given HScene is always aligned with the L0 (X) Up/Down axi
 
 The T-Code format and open source sex robots (OSR2, OSR2+, SR6) were all created/developed by TempestVR. You can find the full/free open sourced OSR2 here: https://www.patreon.com/posts/osr2-1-year-47041804
 
-## Supported Scenes In Honey Select 2
+**Adding animations/positions to file**
+When enabling the option to read from file, a file which contains the known animations/positions will be created ("sexRobotController.txt").
+The file is only created if it doesn't exists to serve as a template, you can delete everything in the file if you want to.
+However, the file with this name must be present for your positions to be read.
+The animations are divided into positions (i.e. what body part should be tracked). One of these values must be used in the pairing.
 
-#### Honey Select 2 Service HScene Category
-|Animation Name|Female Target Type|Supported|
-|---|---|---|
-|Blowjob|ORAL|Yes|
-|Handjob|LEFTHAND|Yes|
-|Glans Tease|(in progress)|No|
-|Boobjob|BREASTS|Yes|
-|Licking Boobjob|BREASTS|Yes|
-|Sucking Boobjob|BREASTS|Yes|
-|Exhausted Handjob|RIGHTHAND|Yes|
-|Exhausted Blowjob|ORAL|Yes|
-|Standing Handjob|RIGHTHAND|Yes|
-|No-Hands Tip Licking|(in progress)|No|
-|No-Hands Blowjob|ORAL|Yes|
-|Deepthroat|ORAL|Yes|
-|Standing Boobjob|BREASTS|Yes|
-|Stand. Lick. Boobjob|BREASTS|Yes|
-|Restrained Blowjob|ORAL|Yes|
-|Forced Handjob|RIGHTHAND|Yes|
-|Irrumatio|ORAL|Yes|
-|Chair Handjob|LEFTHAND|Yes|
-|Sit. No-Hand Blowjob|ORAL|Yes|
-|Sitting Boobjob|BREASTS|Yes|
-|Sitting Licking Boobjob|BREASTS|Yes|
-|Wall-Trapped Blowjob|ORAL|Yes|
-|Crouching Blowjob|ORAL|Yes|
-|Desk Handjob|RIGHTHAND|Yes|
-|Behind Handjob|LEFTHAND|Yes|
-|Sleeping Boobjob|BREASTS|Yes|
-|Wall Irramatio|ORAL|Yes|
-|Chair Irramatio|ORAL|Yes|
-|Pet Blowjob|ORAL|Yes|
+- ORAL
+- BREASTS
+- LEFTHAND / RIGHTHAND
+- INTERCRURAL
+- VAGINAL
+- ANAL
+- LEFTFOOT / RIGHTFOOT / BOTH_FEET
 
-#### Honey Select 2 Insert HScene Category
-|Animation Name|Female Target Type|Supported|
-|---|---|---|
-|Missionary|VAGINAL|Yes|
-|Breast Grope Missionary|VAGINAL|Yes|
-|Doggy|VAGINAL|Yes|
-|Kneeling Behind|VAGINAL|Yes|
-|Spooning|VAGINAL|Yes|
-|Cowgirl|VAGINAL|Yes|
-|Chest Grope Cowgirl|VAGINAL|Yes|
-|Reverse Cowgirl|VAGINAL|Yes|
-|Piledriver Missionary|VAGINAL|Yes|
-|Bent Missionary|VAGINAL|Yes|
-|Double Decker|VAGINAL|Yes|
-|Anal Missionary|ANAL|Yes|
-|Anal Doggy|ANAL|Yes|
-|Floor Bondage Miss.|VAGINAL|Yes|
-|Forced Missionary|VAGINAL|Yes|
-|Standing|VAGINAL|Yes|
-|Standing Behind|VAGINAL|Yes|
-|Thrust Behind|VAGINAL|Yes|
-|Lifting|VAGINAL|Yes|
-|Reverse Lifting|VAGINAL|Yes|
-|Thighjob|INTERCRURAL|Yes|
-|Stockade|VAGINAL|Yes|
-|Wall-Facing Behind|VAGINAL|Yes|
-|Wall-Facing Anal|ANAL|Yes|
-|Chair Sitting Behind|VAGINAL|Yes|
-|Anal Doggy on Chair|ANAL|Yes|
-|Desk Missionary|VAGINAL|Yes|
-|Desk on Side|VAGINAL|Yes|
-|Desk Doggy|ANAL|Yes|
-|Against Counter Behind|VAGINAL|Yes|
-|Wall-Trapped Doggy|VAGINAL|Yes|
-|Crouch Insertion|VAGINAL|Yes|
-|Delivery Table Insert|VAGINAL|Yes|
-|Hanging|VAGINAL|Yes|
-|Tied Up Insertion|VAGINAL|Yes|
-|Lying Doggystyle|VAGINAL|Yes|
-|Anal Piledriver Miss.|ANAL|Yes|
-|Face to Face Sitting|VAGINAL|Yes|
-|Chest Grope Sit Behind|VAGINAL|Yes|
-|Sitting Hugging|VAGINAL|Yes|
-|Restrained Standing|VAGINAL|Yes|
-|Clinging Lifting|VAGINAL|Yes|
-|Wall-Pressed Behind|VAGINAL|Yes|
-|Pet Sex|VAGINAL|Yes|
-|Mating Press|VAGINAL|Yes|
+Threesome:
+- ORALSWAP
+- BREASTSWAP
+- LEFTHANDSWAP / RIGHTHANDSWAP
+- INTERCRURALSWAP
+- VAGINALSWAP
+- LEFTFOOTSWAP / RIGHTFOOTSWAP
 
-#### Honey Select 2 Woman-led HScene Category
-|Animation Name|Female Target Type|Supported|
-|---|---|---|
-|Face Sit Cunnilingus|(in progress)|No|
-|Nipple Licking Blowjob|RIGHTHAND|Yes|
-|Rimjob + Handjob|RIGHTHAND|Yes|
-|Standing Footjob|(in progress)|No|
-|Sitting Footjob|(in progress)|No|
-|All Fours Handjob|RIGHTHAND|Yes|
-|Restrained Blowjob|ORAL|Yes|
-|Chair Restraint Footjob|(in progress)|No|
-|Cowgirl|VAGINAL|Yes|
-|Reverse Cowgirl|VAGINAL|Yes|
-|Reverse Piledriver|VAGINAL|Yes|
-|Cowgirl Intercrural|INTERCRURAL|Yes|
-|Handjob Intercrural|INTERCRURAL|Yes|
-|Chair Intercrural|INTERCRURAL|Yes|
-|Piledriver Rev. Cowgirl|VAGINAL|Yes|
-|Standing|VAGINAL|Yes|
-|Anal Reverse Cowgirl|ANAL|Yes|
-|Male Restrained Stand|VAGINAL|Yes|
-|Chair Restraint Sitting|VAGINAL|Yes|
 
-#### Honey Select 2 Female Group HScene Category
-|Animation Name|Female Target Type|Supported|
-|---|---|---|
-|W Cowgirl|VAGINAL|Yes|
-|W Cowgirl (swap)|VAGINALSWAP|Yes|
-|W Blowjob|ORAL|Yes|
-|W Blowjob (swap)|ORALSWAP|Yes|
-|Intercrural Sandwich|INTERCRURAL|Yes|
-|Interc. Sandwich (swap)|INTERCRURAL|Yes|
-|Insertion + Fingering|VAGINAL|Yes|
-|Insert. + Fing. (swap)|VAGINALSWAP|Yes|
-|W Handjob Licking|RIGHTHANDSWAP|Yes|
-|W Handjob Lick. (swap)|RIGHTHAND|Yes|
-|Sitting+Cunilingus|VAGINAL|Yes|
-|Sit+Cunilingus (swap)|VAGINALSWAP|Yes|
+As can be seen in the file, these are in the format:
+```
+<animationName>, <bodypart>
+```
 
-#### Honey Select 2 Special HScene Category
-|Animation Name|Female Target Type|Supported|
-|---|---|---|
-|69|ORAL|Yes|
+Some examples:
+```
+Handjob, LEFTHAND
+Sitting Titjob, BREASTS
+Sitting side, VAGINAL
+```
+
+This need to be a match with the list above, if not there will be no movement.
+For example, if the right hand is used in a handjob and the left hand is set to be tracked, there will be no movement, since the part tracked isn't moving.
+Animations that aren't listed/known can be printed in the terminal, hence why I recommend first enabling the BepInEx Logging (Plugin settings -> BepInEx -> Logging.Disk -> Enabled).
+Then, under the SexRobotController Plugin settings, enable "BepInEx Debug: Print position (console)".
+
+For HS, all the "Foreplay (Receiving)" are not included, the same is true for KKS.
+In addition, for KKS, the idle animation name will be printed too: "立ち愛撫" (this can be ignored).
+
+You don't need to restart the game to use the newly added animations, but you do need to execute the following steps to load the recently added animations:
+1. Open Plugin settings and for the SexRobotController, disable and then re-enable the "Read positions from file" option.
+2. Select a different animation to read the content from file (the content of the file is read once, on animation change)
+
+If after adding a new position (and you've disabled  and re-enabled the "Reaad positions from file"), check the BepInEx Log (found in ""<GameDir>\BepInEx") for errors.
+Here is an example of how an error could look like, if an invalid value was added (in this example, the value 'INVALID' was set for the body part, which doesn't exist).
+
+```
+[Info   :HS2_SexRobotController] Error updating Animation dictionary: System.ArgumentException: Requested value 'INVALID' was not found.
+  at HS2_SexRobotController.FileHandler.readPositionsFromFile () [0x0007c] in <ca2677a8d684461c82753f125094d4f9>:0
+  at HS2_SexRobotController.SerialPortConnection.CheckButtonAndSerialConnState () [0x0001a] in <ca2677a8d684461c82753f125094d4f9>:0
+```
