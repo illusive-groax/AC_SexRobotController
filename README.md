@@ -7,7 +7,8 @@
 > This is currently a Pre-Release, due to the lack of proper movement reflection (in-game vs. actual SR6 movement).
 > It is **not** a stable release nor ready for daily usage.
 > Please do a test-run with the chosen multipliers to see how the SR6 behaves, as with higher multiplier values the movement is unpredictable upon speed increase.
-
+>
+> For more info, see the discussion on EroScripts: https://discuss.eroscripts.com/t/illgames-aicomi-sr6-bepinex-plugin-wip/317325
 
 **Main configuration menu accessed by hitting F1 and then clicking the Plugin settings button**
 
