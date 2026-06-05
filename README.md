@@ -12,9 +12,8 @@
 
 **Main configuration menu accessed by hitting F1 and then clicking the Plugin settings button**
 
-<!--
 ![plugin](screenshots/bepinEx_menu.png)
--->
+
 
 This plugin outputs the positional data from a total of 100 (currently) of the 'HScenes' (sex scenes) in Aicomi with full 6 degrees of freedom (6DOF) in a simple text format known as T-Code (Toy-Code) which is then sent over a serial link (COM port) to drive an open source sex robot (OSR2, OSR2+, SR6, etc).
 
@@ -33,14 +32,14 @@ The T-Code format and open source sex robots (OSR2, OSR2+, SR6) were all created
 
 **Quick access buttons to connect / disconnect your sex robot and to increase / decrease the stroke multiplier**
 
-![plugin](screenshots/ac_MenuButtons.png)
+![plugin](Screenshots/ac_MenuButtons.png)
 
 **Pressing the hotkeys or the quick access buttons to connect / disconnect your sex robot and to increase / decrease the stroke multiplier show feedback text when pressed**
 
-![plugin](screenshots/ac_stateChange.png)
+![plugin](Screenshots/ac_stateChange.png)
 
 **Separate button (the second "Settings" icon) for enabling or disabling the speed limiter.**
-![plugin](screenshots/ac_Scene_limitButton.png)
+![plugin](Screenshots/ac_Scene_limitButton.png)
 
 **Writing animations to file**
 This is an option which writes the name of the current animation to file to make it easier to add missing animations.
