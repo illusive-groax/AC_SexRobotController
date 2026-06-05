@@ -1,205 +1,126 @@
-﻿using BepInEx.Configuration;
+﻿using AC_SexRobotController.Helpers;
+using AC_SexRobotController.Plugin;
 using System;
-using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading.Tasks;
-using TMPro;
-using UnityEngine;
 
-namespace KKS_SexRobotController
+namespace AC_SexRobotController.RobotController
 {
     internal sealed class SerialPortConnection
     {
-        private static SerialPortConnection _instance;
-        private static readonly object _lock = new object();
-
-        internal SerialPort serialPort { get; set; }
-        internal ConfigEntry<string> serialPortConfig { get; set; }
-        internal ConfigEntry<bool> serialPortConnected { get; set; }
-        internal ConfigEntry<string> serialPortStatus { get; set; }
-        internal static readonly string[] SerialPorts = {
-            "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "COM10",
-            "COM11", "COM12", "COM13", "COM14", "COM15", "COM16", "COM17", "COM18", "COM19",
-            "COM20", "COM21", "COM22", "COM23", "COM24", "COM25", "COM26", "COM27", "COM28",
-            "COM29", "COM30", "COM31", "COM32", "COM33"
-        };
-
-        internal ConfigEntry<KeyboardShortcut> toggleSerialPortConnection { get; set; }
-        internal ConfigEntry<KeyboardShortcut> strokeLengthMultiplierIncrease { get; set; }
-        internal ConfigEntry<KeyboardShortcut> strokeLengthMultiplierDecrease { get; set; }
-        internal ConfigEntry<KeyboardShortcut> togglelimitRobotStrokeLength { get; set; }
-
-        internal ConfigEntry<float> sexRobotUpdateFrequencyConfig { get; set; }
-        internal ConfigEntry<bool> diagnosticsConfig { get; set; }
-        internal ConfigEntry<bool> readPositionsFromFile { get; set; }
-        internal ConfigEntry<bool> printSceneName { get; set; }
-        internal ConfigEntry<bool> limitRobotL0Length { get; set; }
-        internal ConfigEntry<float> limitRobotL0Multiplier { get; set; }
-        internal ConfigEntry<float> robotL0Multiplier { get; set; }
-        internal ConfigEntry<float> robotL0MultiplierStepValue { get; set; }
-        internal ConfigEntry<float> robotL0Min { get; set; }
-        internal ConfigEntry<float> robotL0Max { get; set; }
-        internal ConfigEntry<float> robotL1Min { get; set; }
-        internal ConfigEntry<float> robotL1Max { get; set; }
-        internal ConfigEntry<float> robotL2Min { get; set; }
-        internal ConfigEntry<float> robotL2Max { get; set; }
-        internal ConfigEntry<float> robotR0Min { get; set; }
-        internal ConfigEntry<float> robotR0Max { get; set; }
-        internal ConfigEntry<float> robotR1Min { get; set; }
-        internal ConfigEntry<float> robotR1Max { get; set; }
-        internal ConfigEntry<float> robotR2Min { get; set; }
-        internal ConfigEntry<float> robotR2Max { get; set; }
-
-        internal TextMeshProUGUI buttonConnectRobotText { get; set; }
-        internal TextMeshProUGUI buttonDisconnectRobotText { get; set; }
-        internal TextMeshProUGUI buttonStrokeMultiplierIncreaseText { get; set; }
-        internal TextMeshProUGUI buttonStrokeMultiplierDecreaseText { get; set; }
-        internal TextMeshProUGUI buttonLimitRobotStrokeLengthText { get; set; }
-        internal bool buttonConnectRobotClicked = false;
-        internal bool buttonDisconnectRobotClicked = false;
-        internal bool buttonLimitRobotStrokeLengthClicked = false;
-        internal bool buttonStrokeMultiplierIncreaseClicked = false;
-        internal bool buttonStrokeMultiplierDecreaseClicked = false;
-
-        internal Transform buttonConnectRobot { get; set; }
-        internal Transform buttonDisconnectRobot { get; set; }
-        internal Transform buttonStrokeMultiplierIncrease { get; set; }
-        internal Transform buttonStrokeMultiplierDecrease { get; set; }
-        internal Transform buttonLimitRobotStrokeLength { get; set; }
+        internal SerialPort AC_SerialPort { get; set; }
+        private static readonly Lazy<SerialPortConnection> _instance = new(() => new SerialPortConnection());
 
         private SerialPortConnection()
         {
-            serialPort = new SerialPort();
+            AC_SerialPort = new SerialPort();
         }
 
         internal static SerialPortConnection GetInstance()
         {
-            // prevent threads stumbling over the lock once the instance is ready.
-            if (_instance == null)
-            {
-                // if just launched, lock the instance
-                lock (_lock)
-                {
-                    // only create a new instance, if one doesn't already exist
-                    if (_instance == null)
-                    {
-                        _instance = new SerialPortConnection();
-                    }
-                }
-            }
-            return _instance;
+            return _instance.Value;
         }
 
-        internal List<string> UpdateSerialPort()
+        internal void UpdateSerialPort()
         {
-            List<string> logList = new List<string>();
-            serialPortConnected.Value = false;
-            logList.Add("Serial COM port changed to: " + serialPortConfig.Value);
+            AC_SexRobotControllerPlugin.SerialPortConnected.Value = false;
+            AC_SexRobotControllerPlugin.LogInfo("Serial COM port changed to: " + AC_SexRobotControllerPlugin.SerialPortConfig.Value);
 
-            if (serialPort != null)
+            if (AC_SerialPort != null)
             {
-                if (serialPort.IsOpen)
+                if (AC_SerialPort.IsOpen)
                 {
                     try
                     {
                         // Close the serial port connection
-                        serialPort.Close();
-
-                        logList.Add("Serial port " + serialPort.PortName + " has been disconnected.");
+                        AC_SerialPort.Close();
+                        AC_SexRobotControllerPlugin.LogInfo("Serial port " + AC_SerialPort.PortName + " has been disconnected.");
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        logList.Add("Error: " + e.ToString());
+                        AC_SexRobotControllerPlugin.LogDebug("Error: " + ex.ToString());
                     }
                 }
             }
-
-            serialPortStatus.Value = serialPortConfig.Value + " port is disconnected.";
-            return logList;
+            AC_SexRobotControllerPlugin.SerialPortStatus.Value = AC_SexRobotControllerPlugin.SerialPortStatus.Value + " port is disconnected.";
         }
 
-        internal List<string> UpdateSerialPortConnection()
+        internal void UpdateSerialPortConnection()
         {
-            List<string> logList = new List<string>();
             // Disconnect serial port if currently connected
-            if (serialPort != null)
+            if (AC_SerialPort != null)
             {
-                if (serialPort.IsOpen)
+                if (AC_SerialPort.IsOpen)
                 {
                     try
                     {
                         // Close the serial port connection
-                        serialPort.Close();
-
-                        serialPortStatus.Value = serialPort.PortName + " port is disconnected.";
-
-                        logList.Add("Serial port " + serialPort.PortName + " has been disconnected.");
+                        AC_SerialPort.Close();
+                        AC_SexRobotControllerPlugin.SerialPortStatus.Value = AC_SerialPort.PortName + " port is disconnected.";
+                        AC_SexRobotControllerPlugin.LogInfo("Serial port " + AC_SerialPort.PortName + " has been disconnected.");
+                        _ = UpdateDisconnectRobotButton();
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        serialPortStatus.Value = serialPort.PortName + " port is disconnected.";
-
-                        logList.Add("Serial port " + serialPort.PortName + " has been disconnected.");
-
-                        logList.Add("Error: " + e.ToString());
+                        AC_SexRobotControllerPlugin.SerialPortStatus.Value = AC_SerialPort.PortName + " port is disconnected.";
+                        AC_SexRobotControllerPlugin.LogInfo("Serial port " + AC_SerialPort.PortName + " has been disconnected.");
+                        AC_SexRobotControllerPlugin.LogDebug("Error: " + ex.ToString());
+                        _ = UpdateDisconnectRobotButton();
                     }
                 }
             }
 
             // Connect to serial port
-            if (serialPortConnected.Value)
+            if (AC_SexRobotControllerPlugin.SerialPortConnected.Value)
             {
                 // Setup COM port based on updated config selection
-                serialPort = new SerialPort("\\\\.\\" + serialPortConfig.Value, 115200);
+                AC_SerialPort = new SerialPort(AC_SexRobotControllerPlugin.SerialPortConfig.Value, 115200);
 
                 try
                 {
                     // Open the serial port connection
-                    serialPort.Open();
+                    AC_SerialPort.Open();
 
-                    if (serialPort.IsOpen)
+                    if (AC_SerialPort.IsOpen)
                     {
-                        serialPortStatus.Value = "Connected to serial port " + serialPortConfig.Value + ".";
 
-                        serialPortConnected.Value = true;
-
-                        logList.Add("Connected to serial port " + serialPort.PortName + ".");
+                        AC_SexRobotControllerPlugin.SerialPortConnected.Value = true;
+                        AC_SexRobotControllerPlugin.SerialPortStatus.Value = "Connected to serial port " + AC_SexRobotControllerPlugin.SerialPortConfig.Value + ".";
+                        AC_SexRobotControllerPlugin.LogInfo("Connected to serial port " + AC_SerialPort.PortName + ".");
                     }
                     else
                     {
-                        serialPortStatus.Value = "Error connecting to serial port " + serialPortConfig.Value + ".";
-
-                        serialPortConnected.Value = false;
-
-                        logList.Add("Error connecting to serial port " + serialPort.PortName + ".");
+                        AC_SexRobotControllerPlugin.SerialPortConnected.Value = false;
+                        AC_SexRobotControllerPlugin.SerialPortStatus.Value = "Error connecting to serial port " + AC_SexRobotControllerPlugin.SerialPortConfig.Value + ".";
+                        AC_SexRobotControllerPlugin.LogInfo("Error connecting to serial port " + AC_SerialPort.PortName + ".");
                     }
+                    _ = UpdateConnectRobotButton();
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    serialPortStatus.Value = "Error connecting to serial port " + serialPortConfig.Value + ".";
-
-                    serialPortConnected.Value = false;
-
-                    logList.Add("Error: " + e.ToString());
+                    AC_SexRobotControllerPlugin.SerialPortConnected.Value = false;
+                    AC_SexRobotControllerPlugin.SerialPortStatus.Value = "Error connecting to serial port " + AC_SexRobotControllerPlugin.SerialPortConfig.Value + ".";
+                    AC_SexRobotControllerPlugin.LogDebug("Error: " + ex.ToString());
+                    _ = UpdateConnectRobotButton();
                 }
             }
-            return logList;
         }
 
         internal async Task UpdateConnectRobotButton()
         {
             await Task.Run(async () =>
             {
-                if (serialPort.IsOpen)
+                if (AC_SerialPort.IsOpen)
                 {
-                    buttonConnectRobotText.text = StringConstants.ButtonConnectRobot_Connected;
+                    AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonConnectRobot_Connected;
                 }
                 else
                 {
-                    buttonConnectRobotText.text = StringConstants.ButtonConnectRobot_NotConnected;
+                    AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonConnectRobot_NotConnected;
                 }
                 await Task.Delay(1000);
-                buttonConnectRobotText.text = StringConstants.ButtonConnectRobot_Text;
+                AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonConnectRobot_Text;
+                AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonDisconnectRobot_Text;
             });
         }
 
@@ -207,244 +128,162 @@ namespace KKS_SexRobotController
         {
             await Task.Run(async () =>
             {
-                if (!serialPort.IsOpen)
+                if (!AC_SerialPort.IsOpen)
                 {
-                    buttonDisconnectRobotText.text = StringConstants.ButtonDisconnectRobot_Disconnected;
+                    AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonDisconnectRobot_Disconnected;
                 }
                 else
                 {
-                    buttonDisconnectRobotText.text = StringConstants.ButtonDisconnectRobot_NotDisconnected;
+                    AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonDisconnectRobot_NotDisconnected;
                 }
                 await Task.Delay(1000);
-                buttonDisconnectRobotText.text = StringConstants.ButtonDisconnectRobot_Text;
+                AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonConnectRobot_Text;
             });
         }
 
-        internal async Task UpdateLimitRobotStrokeLengthButton()
+        internal static async Task UpdateLimitRobotStrokeLengthButton()
         {
             await Task.Run(async () =>
             {
-                if (!limitRobotL0Length.Value)
+                if (!AC_SexRobotControllerPlugin.LimitRobotL0Length.Value)
                 {
-                    limitRobotL0Length.Value = true;
-                    buttonLimitRobotStrokeLengthText.text = StringConstants.ButtonStrokeLengthLimiter_Enabled;
+                    AC_SexRobotControllerPlugin.LimitRobotL0Length.Value = true;
+                    AC_SexRobotControllerPlugin.buttonLimitRobotStrokeLengthText.text = StringConstants.ButtonStrokeLengthLimiter_Enabled;
                 }
                 else
                 {
-                    limitRobotL0Length.Value = false;
-                    buttonLimitRobotStrokeLengthText.text = StringConstants.ButtonStrokeLengthLimiter_Disabled;
+                    AC_SexRobotControllerPlugin.LimitRobotL0Length.Value = false;
+                    AC_SexRobotControllerPlugin.buttonLimitRobotStrokeLengthText.text = StringConstants.ButtonStrokeLengthLimiter_Disabled;
                 }
                 await Task.Delay(1000);
-                buttonLimitRobotStrokeLengthText.text = StringConstants.ButtonStrokeLengthLimiter_Text;
+                AC_SexRobotControllerPlugin.buttonLimitRobotStrokeLengthText.text = StringConstants.ButtonStrokeLengthLimiter_Text;
             });
         }
 
-        internal async Task UpdateStrokeMultiplierIncreaseButton()
+        internal static async Task UpdateStrokeMultiplierIncreaseButton()
         {
             await Task.Run(async () =>
             {
-                buttonStrokeMultiplierIncreaseText.text = robotL0Multiplier.Value.ToString();
+                AC_SexRobotControllerPlugin.buttonStrokeMultiplierIncreaseText.text = AC_SexRobotControllerPlugin.RobotL0Multiplier.Value.ToString();
                 await Task.Delay(1000);
-                buttonStrokeMultiplierIncreaseText.text = StringConstants.ButtonIncreaseStrokeLength_Text;
+                AC_SexRobotControllerPlugin.buttonStrokeMultiplierIncreaseText.text = StringConstants.ButtonIncreaseStrokeLength_Text;
             });
         }
 
-        internal async Task UpdateStrokeMultiplierDecreaseButton()
+        internal static async Task UpdateStrokeMultiplierDecreaseButton()
         {
             await Task.Run(async () =>
             {
-                buttonStrokeMultiplierDecreaseText.text = robotL0Multiplier.Value.ToString();
+                AC_SexRobotControllerPlugin.buttonStrokeMultiplierDecreaseText.text = AC_SexRobotControllerPlugin.RobotL0Multiplier.Value.ToString();
                 await Task.Delay(1000);
-                buttonStrokeMultiplierDecreaseText.text = StringConstants.ButtonDecreaseStrokeLength_Text;
+                AC_SexRobotControllerPlugin.buttonStrokeMultiplierDecreaseText.text = StringConstants.ButtonDecreaseStrokeLength_Text;
             });
         }
 
-        internal List<string> checkButtonAndSerialConnState()
+        internal void CheckButtonAndSerialConnState()
         {
-            List<string> logList = new List<string>();
-
             // Check if connect robot button was clicked
-            if (buttonConnectRobotClicked)
+            if (AC_SexRobotControllerPlugin.buttonConnectRobotClicked)
             {
-                buttonConnectRobotClicked = false;
+                AC_SexRobotControllerPlugin.buttonConnectRobotClicked = false;
 
-                if (serialPortConnected.Value)
+                if (AC_SexRobotControllerPlugin.SerialPortConnected.Value)
                 {
                     UpdateSerialPortConnection();
                 }
                 else
                 {
-                    serialPortConnected.Value = true;
+                    AC_SexRobotControllerPlugin.SerialPortConnected.Value = true;
                 }
 
-                Task task = UpdateConnectRobotButton();
+                _ = UpdateConnectRobotButton();
             }
 
             // Check if connect robot button was clicked
-            if (buttonDisconnectRobotClicked)
+            if (AC_SexRobotControllerPlugin.buttonDisconnectRobotClicked)
             {
-                buttonDisconnectRobotClicked = false;
+                AC_SexRobotControllerPlugin.buttonDisconnectRobotClicked = false;
 
-                if (!serialPortConnected.Value)
+                if (!AC_SexRobotControllerPlugin.SerialPortConnected.Value)
                 {
                     UpdateSerialPortConnection();
                 }
                 else
                 {
-                    serialPortConnected.Value = false;
+                    AC_SexRobotControllerPlugin.SerialPortConnected.Value = false;
                 }
 
-                Task task = UpdateDisconnectRobotButton();
+                _ = UpdateDisconnectRobotButton();
             }
 
             // Check if increase stroke multiplier button was clicked
-            if (buttonStrokeMultiplierIncreaseClicked)
+            if (AC_SexRobotControllerPlugin.buttonStrokeMultiplierIncreaseClicked)
             {
-                buttonStrokeMultiplierIncreaseClicked = false;
+                AC_SexRobotControllerPlugin.buttonStrokeMultiplierIncreaseClicked = false;
 
-                robotL0Multiplier.Value += robotL0MultiplierStepValue.Value;
+                AC_SexRobotControllerPlugin.RobotL0Multiplier.Value += AC_SexRobotControllerPlugin.RobotL0MultiplierStepValue.Value;
 
-                Task task = UpdateStrokeMultiplierIncreaseButton();
+                _ = UpdateStrokeMultiplierIncreaseButton();
 
-                logList.Add(StringConstants.Status_CurrentStrokeMultiplierValue + robotL0Multiplier.Value);
+                AC_SexRobotControllerPlugin.LogInfo(StringConstants.Status_CurrentStrokeMultiplierValue + AC_SexRobotControllerPlugin.RobotL0Multiplier.Value);
             }
 
             // Check if decrease stroke multiplier button was clicked
-            if (buttonStrokeMultiplierDecreaseClicked)
+            if (AC_SexRobotControllerPlugin.buttonStrokeMultiplierDecreaseClicked)
             {
-                buttonStrokeMultiplierDecreaseClicked = false;
+                AC_SexRobotControllerPlugin.buttonStrokeMultiplierDecreaseClicked = false;
 
-                robotL0Multiplier.Value -= robotL0MultiplierStepValue.Value;
+                AC_SexRobotControllerPlugin.RobotL0Multiplier.Value -= AC_SexRobotControllerPlugin.RobotL0MultiplierStepValue.Value;
 
-                Task task = UpdateStrokeMultiplierDecreaseButton();
+                _ = UpdateStrokeMultiplierDecreaseButton();
 
-                logList.Add(StringConstants.Status_CurrentStrokeMultiplierValue + robotL0Multiplier.Value);
+                AC_SexRobotControllerPlugin.LogInfo(StringConstants.Status_CurrentStrokeMultiplierValue + AC_SexRobotControllerPlugin.RobotL0Multiplier.Value);
             }
 
             // Check if speed limit button was clicked
-            if (buttonLimitRobotStrokeLengthClicked)
+            if (AC_SexRobotControllerPlugin.buttonLimitRobotStrokeLengthClicked)
             {
-                buttonLimitRobotStrokeLengthClicked = false;
+                AC_SexRobotControllerPlugin.buttonLimitRobotStrokeLengthClicked = false;
 
-                logList.Add(StringConstants.Status_SpeedLimited + !limitRobotL0Length.Value);
+                AC_SexRobotControllerPlugin.LogInfo(StringConstants.Status_SpeedLimited + !AC_SexRobotControllerPlugin.LimitRobotL0Length.Value);
 
-                Task task = UpdateLimitRobotStrokeLengthButton();
+                _ = UpdateLimitRobotStrokeLengthButton();
             }
 
             // Check if increase stroke multiplier hotkey was pressed
-            if (strokeLengthMultiplierIncrease.Value.IsDown())
+            if (AC_SexRobotControllerPlugin.StrokeLengthMultiplierIncrease.Value.IsDown())
             {
-                robotL0Multiplier.Value += robotL0MultiplierStepValue.Value;
+                AC_SexRobotControllerPlugin.RobotL0Multiplier.Value += AC_SexRobotControllerPlugin.RobotL0MultiplierStepValue.Value;
+                _ = UpdateStrokeMultiplierIncreaseButton();
 
-                Task task = UpdateStrokeMultiplierIncreaseButton();
-
-                logList.Add(StringConstants.Status_CurrentStrokeMultiplierValue + robotL0Multiplier.Value);
+                AC_SexRobotControllerPlugin.LogInfo(StringConstants.Status_CurrentStrokeMultiplierValue + AC_SexRobotControllerPlugin.RobotL0Multiplier.Value);
             }
 
+
             // Check if decrease stroke multiplier hotkey was pressed
-            if (strokeLengthMultiplierDecrease.Value.IsDown())
+            if (AC_SexRobotControllerPlugin.StrokeLengthMultiplierDecrease.Value.IsDown())
             {
-                robotL0Multiplier.Value -= robotL0MultiplierStepValue.Value;
+                AC_SexRobotControllerPlugin.RobotL0Multiplier.Value -= AC_SexRobotControllerPlugin.RobotL0MultiplierStepValue.Value;
 
-                Task task = UpdateStrokeMultiplierDecreaseButton();
+                _ = UpdateStrokeMultiplierDecreaseButton();
 
-                logList.Add(StringConstants.Status_CurrentStrokeMultiplierValue + robotL0Multiplier.Value);
+                AC_SexRobotControllerPlugin.LogInfo(StringConstants.Status_CurrentStrokeMultiplierValue + AC_SexRobotControllerPlugin.RobotL0Multiplier.Value);
             }
 
             // Check if speed limiter hotkey was pressed
-            if (togglelimitRobotStrokeLength.Value.IsDown())
+            if (AC_SexRobotControllerPlugin.TogglelimitRobotStrokeLength.Value.IsDown())
             {
 
-                logList.Add(StringConstants.Status_SpeedLimited + !limitRobotL0Length.Value);
+                AC_SexRobotControllerPlugin.LogInfo(StringConstants.Status_SpeedLimited + !AC_SexRobotControllerPlugin.LimitRobotL0Length.Value);
 
-                Task task = UpdateLimitRobotStrokeLengthButton();
+                _ = UpdateLimitRobotStrokeLengthButton();
             }
 
             // Check if serial port connection toggle hotkey was pressed and toggle the serial port on/off if so
-            if (toggleSerialPortConnection.Value.IsDown())
+            if (AC_SexRobotControllerPlugin.ToggleSerialPortConnection.Value.IsDown())
             {
-                bool connectSerialPort = false;
-
-                if (serialPort != null)
-                {
-                    if (serialPort.IsOpen)
-                    {
-                        try
-                        {
-                            serialPortConnected.Value = false;
-
-                            serialPortStatus.Value = serialPort.PortName + " port is disconnected.";
-
-                            // Close the serial port connection
-                            serialPort.Close();
-
-                            Task task = UpdateDisconnectRobotButton();
-
-                            logList.Add("Serial port " + serialPort.PortName + " has been disconnected.");
-                        }
-                        catch (Exception e)
-                        {
-                            serialPortStatus.Value = serialPort.PortName + " port is disconnected.";
-
-                            Task task = UpdateDisconnectRobotButton();
-
-                            logList.Add("Serial port " + serialPort.PortName + " has been disconnected.");
-
-                            logList.Add("Error: " + e.ToString());
-                        }
-                    }
-                    else
-                    {
-                        connectSerialPort = true;
-                    }
-                }
-                else
-                {
-                    connectSerialPort = true;
-                }
-
-                if (connectSerialPort)
-                {
-                    try
-                    {
-                        // Setup COM port based on config selection
-                        serialPort = new SerialPort("\\\\.\\" + serialPortConfig.Value, 115200);
-
-                        // Open the serial port connection
-                        serialPort.Open();
-
-                        if (serialPort.IsOpen)
-                        {
-                            serialPortConnected.Value = true;
-
-                            serialPortStatus.Value = "Connected to serial port " + serialPortConfig.Value + ".";
-
-                            Task task = UpdateConnectRobotButton();
-
-                            logList.Add("Connected to serial port " + serialPort.PortName + ".");
-                        }
-                        else
-                        {
-                            serialPortStatus.Value = "Error connecting to serial port " + serialPort.PortName + ".";
-
-                            Task task = UpdateConnectRobotButton();
-
-                            logList.Add("Error connecting to serial port " + serialPort.PortName + ".");
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        serialPortStatus.Value = "Error connecting to serial port " + serialPort.PortName + ".";
-
-                        Task task = UpdateConnectRobotButton();
-
-                        logList.Add("Error connecting to serial port " + serialPort.PortName + ".");
-
-                        logList.Add("Error: " + e.ToString());
-                    }
-                }
+                AC_SexRobotControllerPlugin.SerialPortConnected.Value = !AC_SexRobotControllerPlugin.SerialPortConnected.Value;
             }
-            return logList;
         }
     }
 }

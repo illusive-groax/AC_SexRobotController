@@ -1,24 +1,16 @@
 ﻿using System.Collections.Generic;
 
-namespace KKS_SexRobotController
+namespace AC_SexRobotController.Helpers
 {
     internal sealed class BoneAnimationDefiner
     {
-        internal enum LoopSpeed
+        //Based on the CtrlFlag: _loopType
+        internal enum LoopType
         {
-            IDLE,
-            INSERT_IDLE,
-            SLOW,
-            MEDIUM,
-            FAST,
-            ANAL_SLOW,
-            ANAL_MEDIUM,
-            ANAL_FAST,
-            ORGASM,
-            ABOUT_TO_CUM_INSIDE,
-            CUMMING_INSIDE,
-            AFTER_CUMMING_INSIDE,
-            IDLE_AFTER_CUMMING_INSIDE
+            IDLE = -1,
+            SLOW = 0,
+            MEDIUM = 1,
+            FAST = 2
         }
 
         internal enum BodyBone
@@ -55,8 +47,6 @@ namespace KKS_SexRobotController
             FEMALE_TOESL,
             FEMALE_TOESR,
             VAGINA,
-            VAGINA_ALT1,
-            VAGINA_ALT2,
             ANUS,
             FEMALE_LBUTT,
             FEMALE_RBUTT,
@@ -92,6 +82,7 @@ namespace KKS_SexRobotController
             BREASTS,
             LEFTHAND,
             RIGHTHAND,
+            BOTH_HANDS,
             LEFTFOOT,
             RIGHTFOOT,
             BOTH_FEET,
@@ -112,24 +103,8 @@ namespace KKS_SexRobotController
             RIGHTHAND
         }
 
-        // retrieved via HFlag.nowAnimStateName
-        internal static readonly Dictionary<LoopSpeed, string> loopSpeedDict = new Dictionary<LoopSpeed, string> {
-            {LoopSpeed.IDLE, "Idle"},
-            {LoopSpeed.INSERT_IDLE, "InsertIdle"},
-            {LoopSpeed.SLOW, "WLoop"},
-            {LoopSpeed.MEDIUM, "SLoop"},
-            {LoopSpeed.FAST, "OLoop"},
-            {LoopSpeed.ANAL_SLOW, "A_WLoop"},
-            {LoopSpeed.ANAL_MEDIUM, "A_SLoop"},
-            {LoopSpeed.ANAL_FAST, "A_OLoop"},
-            //{LoopSpeed.ORGASM, "xxx"},
-            {LoopSpeed.ABOUT_TO_CUM_INSIDE, "WS_IN_Start"},
-            {LoopSpeed.CUMMING_INSIDE, "WS_IN_A"},
-            {LoopSpeed.AFTER_CUMMING_INSIDE, "SS_IN_A"},
-            {LoopSpeed.IDLE_AFTER_CUMMING_INSIDE, "IN_A"},
-        };
-
-        internal static readonly Dictionary<BodyBone, string> bodyBoneDictionary = new Dictionary<BodyBone, string> {
+        internal static readonly Dictionary<BodyBone, string> bodyBoneDictionary = new()
+        {
             {BodyBone.FEMALE, "k_f_tamaL_00"},
             {BodyBone.FEMALE_HEAD, "cf_j_head"},
             {BodyBone.FEMALE_THIGHTL, "cf_j_thigh00_L"},
@@ -162,8 +137,6 @@ namespace KKS_SexRobotController
             {BodyBone.FEMALE_TOESL, "cf_j_toes_L"},
             {BodyBone.FEMALE_TOESR, "cf_j_toes_R"},
             {BodyBone.VAGINA, "cf_j_kokan"},
-            {BodyBone.VAGINA_ALT1, "a_n_kokan"},
-            {BodyBone.VAGINA_ALT2, "cf_n_pee"},
             {BodyBone.ANUS, "cf_j_ana"},
             {BodyBone.FEMALE_LBUTT, "k_f_siriL_00"},
             {BodyBone.FEMALE_RBUTT, "k_f_siriR_00"},
@@ -185,406 +158,255 @@ namespace KKS_SexRobotController
             {BodyBone.MALE_HAND_RINGR, "cf_j_ring01_R"},
             {BodyBone.MALE_HAND_LITTLER, "cf_j_little01_R"},
             {BodyBone.PENIS, "a_n_dan"},
-            {BodyBone.PENIS_BASE, "cm_J_dan100_00"},
-            {BodyBone.PENIS_TIP, "cm_J_dan109_00"},
-            {BodyBone.BALLS_L, "cm_J_dan_f_L"},
-            {BodyBone.BALLS_R, "cm_J_dan_f_R"}
+            {BodyBone.PENIS_BASE, "cf_j_dan100_00"},
+            {BodyBone.PENIS_TIP, "cf_j_dan109_00"},
+            {BodyBone.BALLS_L, "cf_j_dan_f_L"},
+            {BodyBone.BALLS_R, "cf_j_dan_f_R"}
         };
 
-        internal static Dictionary<string, FemaleTargetType> animationFemaleTargetDictionary = new Dictionary<string, FemaleTargetType>
+        internal static readonly Dictionary<string, FemaleTargetType> animationFemaleTargetDictionary = new()
         {
             // Schema: {ANIMATION NAME, FEMALE TARGET(S) TO USE IN REGARD TO MAPPING TO THE MALE'S PENIS TARGET}
 
-            // Koikatsu Service HScene Category
+            // Aicomi Service HScene Category
             //handjob
-            //{"HANDJOB", femaleTargetType.LEFTHAND},
-            {"片手コキ", FemaleTargetType.RIGHTHAND},
-            {"椅子片手コキ", FemaleTargetType.LEFTHAND},
-            {"両手コキ", FemaleTargetType.LEFTHAND},
-            {"椅子亀頭いじり", FemaleTargetType.RIGHTHAND},
-            {"椅子乳首舐め手コキ", FemaleTargetType.LEFTHAND},
-            {"立ち片手コキ", FemaleTargetType.RIGHTHAND},
-            {"立ち亀頭いじり", FemaleTargetType.RIGHTHAND},
-            {"立ち先キス+竿キス手コキ", FemaleTargetType.LEFTHAND},
-            {"On Table Handjob", FemaleTargetType.LEFTHAND},
-            //crowded handjob
-            {"密着手コキ", FemaleTargetType.LEFTHAND},
+            //{"HANDJOB", FemaleTargetType.LEFTHAND}, 
+            {"嫌がり手コキ", FemaleTargetType.LEFTHAND}, // Handjob            
+            {"手コキ", FemaleTargetType.LEFTHAND}, //Handjob
+            {"無理矢理手コキ", FemaleTargetType.RIGHTHAND}, //Forced Handjob
+            {"亀頭弄り", FemaleTargetType.RIGHTHAND}, //Glans play
+            {"立ち手コキ", FemaleTargetType.RIGHTHAND}, //Standing handjob
+            {"横向き手コキ", FemaleTargetType.RIGHTHAND}, //Side-facing handjob
+            {"椅子手コキ", FemaleTargetType.RIGHTHAND}, //Chair handjob
+            {"背面手コキ", FemaleTargetType.LEFTHAND}, //Reverse handjob
+            {"開脚手コキ", FemaleTargetType.LEFTHAND}, //Spread-leg handjob
+            {"逆さ手コキ", FemaleTargetType.LEFTHAND}, //Reverse handjob
+            {"脱力手コキ", FemaleTargetType.RIGHTHAND}, //weak handjob
+
             //blowjob
-            //{"ORAL", femaleTargetType.ORAL},
-            {"Forced Deepthroat 2", FemaleTargetType.ORAL},
-            {"両手フェラ", FemaleTargetType.ORAL},
-            {"Lying Mouth Fuck", FemaleTargetType.ORAL},
-            {"Sucking Forced", FemaleTargetType.ORAL},
-            {"先舐め＋竿舐め", FemaleTargetType.ORAL},
-            {"Lying on Table Blowjob", FemaleTargetType.ORAL},
-            {"[Horizon]", FemaleTargetType.ORAL},
-            {"[Loop-Deformed-Halloween]", FemaleTargetType.ORAL},
-            {"[Reverse lift blowjob]", FemaleTargetType.ORAL},
-            {"片手フェラ", FemaleTargetType.ORAL},
-            {"Lying, Foot & Blowjob", FemaleTargetType.ORAL},
-            {"椅子両手フェラ", FemaleTargetType.ORAL},
-            {"椅子先舐め＋竿舐め", FemaleTargetType.ORAL},
-            {"立ち片手フェラ", FemaleTargetType.ORAL},
-            {"立ち玉舐め手コキ", FemaleTargetType.ORAL},
-            {"Sucking Sitting Girl", FemaleTargetType.ORAL},
-            {"69", FemaleTargetType.ORAL},
-            {"Deepthroat", FemaleTargetType.ORAL},
-            {"Forced Deepthroat", FemaleTargetType.ORAL},
-            {"Forced Deepthroat Sitting", FemaleTargetType.ORAL},
-            {"Kneeling Deepthroat", FemaleTargetType.ORAL},
-            {"ちんぐり返しフェラ", FemaleTargetType.ORAL},
-            {"椅子ノーハンド先舐め", FemaleTargetType.ORAL},
-            {"立ち両手フェラ", FemaleTargetType.ORAL},
-            {"Stand 69", FemaleTargetType.ORAL},
-            {"立ちノーハンドフェラ", FemaleTargetType.ORAL},
-            {"Ying Yang", FemaleTargetType.ORAL},
-            {"Desk Leaning Deepthroat", FemaleTargetType.ORAL},
-            {"Forced Deepthroat Desk", FemaleTargetType.ORAL},
-            {"Kneeling on Table Blowjob", FemaleTargetType.ORAL},
-            //bench blowjob
-            {"ベンチフェラ", FemaleTargetType.ORAL},
-            //periscope bj
-            {"潜望鏡フェラ", FemaleTargetType.ORAL},
-            //straddle bench BJ
-            {"椅子またがりフェラ", FemaleTargetType.ORAL},
-            // volleyball net BJ
-            {"ネットフェラ", FemaleTargetType.ORAL},
+            //{"ORAL", FemaleTargetType.ORAL},
+            {"フェラ", FemaleTargetType.ORAL}, //Fellatio/Blowjob
+            {"ノーハンド先舐め", FemaleTargetType.ORAL}, //Licking Penis Tip / No-hands tip lick
+            {"立ちノーハンドフェラ", FemaleTargetType.ORAL}, //Standing Blowjob
+            {"椅子ノーハンドフェラ", FemaleTargetType.ORAL}, //Sitting No-Hand Blowjob / No-hands blowjob on chair
+            {"ディープスロート", FemaleTargetType.ORAL}, //Deepthroat
+            {"乳首舐め手コキ", FemaleTargetType.ORAL}, //Nipple Licking Fellatio
+            {"嫌がりフェラ", FemaleTargetType.ORAL}, //Forced Fellatio
+            {"立ちのノーハンドフェラ", FemaleTargetType.ORAL}, //Standing No-Hand Blowjob
+            {"無理矢理フェラ", FemaleTargetType.ORAL}, //Forced Blowjob
+            {"しゃがみフェラ", FemaleTargetType.ORAL}, //Crouching blowjob
+            {"ソファーフェラ", FemaleTargetType.ORAL}, //Sofa blowjob
+            {"机下フェラ", FemaleTargetType.ORAL}, //Under-desk blowjob
+            {"フェラオナニー", FemaleTargetType.ORAL}, //Blowjob jerk-off
+            {"壁穴フェラ", FemaleTargetType.ORAL}, //Ground-hole blowjob
+            {"男拘束フェラ", FemaleTargetType.ORAL}, //Man restrained blowjob
+            {"脱力フェラ", FemaleTargetType.ORAL}, //Weak blowjob
+            {"触手フェラ", FemaleTargetType.ORAL}, //Tentacle blowjob
+            {"路地裏フェラ", FemaleTargetType.ORAL}, //Back Alley Blowjob
+            {"ゃがみフェラ", FemaleTargetType.ORAL}, //Crouching blowjob
+            {"ギロチンフェラ", FemaleTargetType.ORAL}, //Guillotine blowjob
+            {"ダブルピースフェラ", FemaleTargetType.ORAL}, //Double peace blowjob
+            {"ノーハンドフェラ", FemaleTargetType.ORAL}, //No-hands blowjob
 
             //titjob
-            //{"TITJOB", femaleTargetType.BREASTS},
-            {"Pressed Titjob 2", FemaleTargetType.BREASTS},
-            {"椅子パイズリ", FemaleTargetType.BREASTS},
-            {"パイズリ", FemaleTargetType.BREASTS},
-            {"立ちパイズリ", FemaleTargetType.BREASTS},
-            {"Desk Grabbed Boobs Fuck", FemaleTargetType.BREASTS},
-            {"Grabbed Boobs Fuck", FemaleTargetType.BREASTS},
-            {"Lying Grabbed Boobs Fuck", FemaleTargetType.BREASTS},
-            {"椅子パイズリ+舐め", FemaleTargetType.BREASTS},
-            {"椅子乳首舐めパイズリ", FemaleTargetType.BREASTS},
-            {"腕はさみパイズリ", FemaleTargetType.BREASTS},
-            {"押し付けパイズリ", FemaleTargetType.BREASTS},
-            {"椅子腕はさみパイズリ", FemaleTargetType.BREASTS},
-            {"椅子パイズリ+咥え", FemaleTargetType.BREASTS},
-            {"立ち腕はさみパイズリ", FemaleTargetType.BREASTS},
-            {"立ちパイズリ+咥え", FemaleTargetType.BREASTS},
-            {"パイズリ+咥え", FemaleTargetType.BREASTS},
-            {"プールパイズリ", FemaleTargetType.BREASTS},
-            
-            // Koikatsu Insert HScene Category
+            //{"TITJOB", FemaleTargetType.BREASTS},
+            {"パイズリ", FemaleTargetType.BREASTS}, //Boobjob / Titty fuck
+            {"パイズリ舐め", FemaleTargetType.BREASTS}, //Licking Boobjob / Titty fuck + Licking
+            {"パイズリ咥え", FemaleTargetType.BREASTS}, //Sucking Boobjob / Titty fuck + Mouth
+            {"立ちパイズリ", FemaleTargetType.BREASTS}, //Standing Boobjob / Standing titjob
+            {"立ちパイズリ舐め", FemaleTargetType.BREASTS}, //Standing Licking Boobjob / Standing titjob + lick
+            {"椅子パイズリ", FemaleTargetType.BREASTS}, // Sitting Boobjob / Chair titfuck
+            {"椅子パイズリ舐め", FemaleTargetType.BREASTS}, //Sitting Licking Boobjob / Chair titfuck + lick
+            {"寝パイズリ", FemaleTargetType.BREASTS}, //Sleeping titfuck
+            {"しゃがみ胸もみ", FemaleTargetType.BREASTS}, //Crouching tit massage
+
+            // Aicomi Insert HScene Category
             //vaginal
-            //{"VAGINAL", femaleTargetType.VAGINAL},
-            {"[Cowgirl leaning]", FemaleTargetType.VAGINAL},
-            {"[Leg Hold Against Wall]", FemaleTargetType.VAGINAL},
-            {"[Reverse Cowgirl]", FemaleTargetType.VAGINAL},
-            {"[Standing behind-Ghost]", FemaleTargetType.VAGINAL},
-            {"[Standing Forward Bending]", FemaleTargetType.VAGINAL},
-            {"[V-shell]", FemaleTargetType.VAGINAL},
-            {"Amazon", FemaleTargetType.VAGINAL},
-            {"Arm-Grab Doggy", FemaleTargetType.VAGINAL},
-            {"Arm-Grab Doggystyle Against Desk", FemaleTargetType.VAGINAL},
-            {"Arm-Grab Doggystyle Against Seat", FemaleTargetType.VAGINAL},
-            {"Arms Locked Doggystyle", FemaleTargetType.VAGINAL},
-            {"B. Doggy (Arm Grab)", FemaleTargetType.VAGINAL},
-            {"Bed-Grabbing Doggystyle 2", FemaleTargetType.VAGINAL},
-            {"Bench Doggystyle", FemaleTargetType.VAGINAL},
-            {"Bench Rev. Cowgirl", FemaleTargetType.VAGINAL},
-            {"Bowing Doggystyle 2", FemaleTargetType.VAGINAL},
-            {"Bridging Missionary 2", FemaleTargetType.VAGINAL},
-            {"ButtChair facing", FemaleTargetType.VAGINAL},
-            {"ButtChair Rev. Cowgirl", FemaleTargetType.VAGINAL},
-            {"Chair Doggy", FemaleTargetType.VAGINAL},
-            {"Chair Legs Spread Missionary", FemaleTargetType.VAGINAL},
-            {"Cowgirl", FemaleTargetType.VAGINAL},
-            {"Cowgirl Hands on Knees", FemaleTargetType.VAGINAL},
-            {"Cowgirl Hug", FemaleTargetType.VAGINAL},
-            {"Cowgirl Nipple Torture 2", FemaleTargetType.VAGINAL},
-            {"Cowgirl Restrain", FemaleTargetType.VAGINAL},
-            {"Desk Against the Table", FemaleTargetType.VAGINAL},
-            {"Desk Doggy 2", FemaleTargetType.VAGINAL},
-            {"Desk Facing the Girl", FemaleTargetType.VAGINAL},
-            {"Desk Lotus", FemaleTargetType.VAGINAL},
-            {"Desk Lying Legs Spread", FemaleTargetType.VAGINAL},
-            {"Desk Lying Legs Up", FemaleTargetType.VAGINAL},
-            {"Doggy", FemaleTargetType.VAGINAL},
-            {"Doggy On Table", FemaleTargetType.VAGINAL},
-            {"Doggy Standing Arm-Grab", FemaleTargetType.VAGINAL},
-            {"Doggy Straddle", FemaleTargetType.VAGINAL},
-            {"Doggystyle Against Chair", FemaleTargetType.VAGINAL},
-            {"Doggystyle Against Desk", FemaleTargetType.VAGINAL},
-            {"Doggystyle Against Fence", FemaleTargetType.VAGINAL},
-            {"Doggystyle Against Wall", FemaleTargetType.VAGINAL},
-            {"Doggystyle", FemaleTargetType.VAGINAL},
-            {"Doggystyle Hair-Pull Forced", FemaleTargetType.VAGINAL},
-            {"Doggystyle In Pool", FemaleTargetType.VAGINAL},
-            {"Extreme Piledriver", FemaleTargetType.VAGINAL},
-            {"Facing Away On Bed 2", FemaleTargetType.VAGINAL},
-            {"Facing On Bed 2", FemaleTargetType.VAGINAL},
-            {"Facing on Bed Stradle Legs On Shoulders", FemaleTargetType.VAGINAL},
-            {"From Behind in Seiza 2", FemaleTargetType.VAGINAL},
-            {"Hand-Holding Cowgirl 2", FemaleTargetType.VAGINAL},
-            {"Hand-Holding Cowgirl 3", FemaleTargetType.VAGINAL},
-            {"Hip-Holding Missionary 2", FemaleTargetType.VAGINAL},
-            {"Holding legs behind doggy style", FemaleTargetType.VAGINAL},
-            {"Holding Legs Missionary", FemaleTargetType.VAGINAL},
-            {"Hold-Knees Spread Missionary", FemaleTargetType.VAGINAL},
-            {"Knee-Holding Missionary 2", FemaleTargetType.VAGINAL},
-            {"Leg Held Doggytyle 2", FemaleTargetType.VAGINAL},
-            {"Leg Held Missionary 2", FemaleTargetType.VAGINAL},
-            {"Leg Held Missionary 3", FemaleTargetType.VAGINAL},
-            {"Leg Held Missionary Leg Lock", FemaleTargetType.VAGINAL},
-            {"Leg Lifted Doggystyle Against Wall", FemaleTargetType.VAGINAL},
-            {"Legs on Shoulders", FemaleTargetType.VAGINAL},
-            {"Legs Spread Missionary 2", FemaleTargetType.VAGINAL},
-            {"Lifted Missionary", FemaleTargetType.VAGINAL},
-            {"Lifting Nelson", FemaleTargetType.VAGINAL},
-            {"Lotus", FemaleTargetType.VAGINAL},
-            {"Lying Doggystyle", FemaleTargetType.VAGINAL},
-            {"Missionary 2", FemaleTargetType.VAGINAL},
-            {"Missionary", FemaleTargetType.VAGINAL},
-            {"Missionary Holding Hands", FemaleTargetType.VAGINAL},
-            {"Missionary Interlock", FemaleTargetType.VAGINAL},
-            {"NTR Forced missionary", FemaleTargetType.VAGINAL},
-            {"Piledriver", FemaleTargetType.VAGINAL},
-            {"Piledriver Missionary", FemaleTargetType.VAGINAL},
-            {"Pool doggy", FemaleTargetType.VAGINAL},
-            {"Princess Hug Side Position 2", FemaleTargetType.VAGINAL},
-            {"Reverse Amazon", FemaleTargetType.VAGINAL},
-            {"Reverse Cowgirl 3", FemaleTargetType.VAGINAL},
-            {"Reverse Cowgirl 4", FemaleTargetType.VAGINAL},
-            {"Reverse Cowgirl 5", FemaleTargetType.VAGINAL},
-            {"Reverse Cowgirl Bridge", FemaleTargetType.VAGINAL},
-            {"Reverse Cowgirl Nelson", FemaleTargetType.VAGINAL},
-            {"Reverse Cowgirl Split", FemaleTargetType.VAGINAL},
-            {"Reverse Piledriver Piston", FemaleTargetType.VAGINAL},
-            {"Reverse Spooning 2", FemaleTargetType.VAGINAL},
-            {"Reverse Spooning 3", FemaleTargetType.VAGINAL},
-            {"Seated Squats", FemaleTargetType.VAGINAL},
-            {"Sitting Behind Four Legs", FemaleTargetType.VAGINAL},
-            {"Sitting Behind Squat", FemaleTargetType.VAGINAL},
-            {"Sitting Cowgirl Straddling", FemaleTargetType.VAGINAL},
-            {"Sofa Cowgirl", FemaleTargetType.VAGINAL},
-            {"Spread Eagle", FemaleTargetType.VAGINAL},
-            {"Standing Arm-Grab", FemaleTargetType.VAGINAL},
-            {"Standing Back Carry", FemaleTargetType.VAGINAL},
-            {"Standing Doggystyle", FemaleTargetType.VAGINAL},
-            {"Standing From Behind 2", FemaleTargetType.VAGINAL},
-            {"Trust Back Cuddle", FemaleTargetType.VAGINAL},
-            {"Trust Back Grabbing Arms", FemaleTargetType.VAGINAL},
-            {"Vault doggy", FemaleTargetType.VAGINAL},
-            {"Vaulting Horse Doggystyle", FemaleTargetType.VAGINAL},
-            {"Wall Facing Leg Lifted", FemaleTargetType.VAGINAL},
-            {"Wall Kneeling Doggystyle", FemaleTargetType.VAGINAL},
-            {"Wall Riding", FemaleTargetType.VAGINAL},
-            {"Wall Standing Split", FemaleTargetType.VAGINAL},
-            //Pool Back
-            {"プールバック", FemaleTargetType.VAGINAL},
-            //Wall Back
-            {"壁バック", FemaleTargetType.VAGINAL},
-            //Floor Hand-Supported Back
-            {"床手付きバック", FemaleTargetType.VAGINAL},
-            //Doggy Style
-            {"後背位", FemaleTargetType.VAGINAL},
-            //Desk Back
-            {"机バック", FemaleTargetType.VAGINAL},
-            //Chair Back
-            {"椅子バック", FemaleTargetType.VAGINAL},
-            //Missionary
-            {"正常位", FemaleTargetType.VAGINAL},
-            //Arm-Pull Doggy Style
-            {"腕引っ張り後背位", FemaleTargetType.VAGINAL},
-            //Cowgirl
-            {"騎乗位", FemaleTargetType.VAGINAL},
-            //Manguri Missionary 
-            {"マングリ正常位", FemaleTargetType.VAGINAL},
-            //Wall-Facing One-Leg-Up
-            {"壁対面片足上げ", FemaleTargetType.VAGINAL},
-            //Doggystyle with legs
-            {"足抱え後背位", FemaleTargetType.VAGINAL},
-            //Floor-Facing Sitting Position
-            {"床対面座位", FemaleTargetType.VAGINAL},
-            //Waist-Hugging Missionary 
-            {"腰抱え正常位", FemaleTargetType.VAGINAL},
-            //Nipple Torture Cowgirl
-            {"乳首責め騎乗位", FemaleTargetType.VAGINAL},
-            //Pounding Piston
-            {"杭打ちピストン", FemaleTargetType.VAGINAL},
-            //Reverse Cowgirl”
-            {"背面騎乗位", FemaleTargetType.VAGINAL},
-            //Princess Carry Side 
-            {"お姫様抱っこ側位", FemaleTargetType.VAGINAL},
-            //Standing
-            {"立位", FemaleTargetType.VAGINAL},
-            //Standing Doggy Style
-            {"立ちバック", FemaleTargetType.VAGINAL},
-            //Bridge Missionary
-            {"ブリッジ正常位", FemaleTargetType.VAGINAL},
-            //Desk Doggy Style with Arms Pulled Back
-            {"腕引っ張り机バック", FemaleTargetType.VAGINAL},
-            //Desk Side             
-            {"机側位", FemaleTargetType.VAGINAL},
-            //Seiza Reverse Sitting 
-            {"正座背面座位", FemaleTargetType.VAGINAL},
-            //Hand-Holding Cowgirl
-            {"手つなぎ騎乗位", FemaleTargetType.VAGINAL},
-            //Knee-Hugging Missionary
-            {"膝抱え正常位", FemaleTargetType.VAGINAL},
-            //Spread-Leg Missionary
-            {"開脚正常位", FemaleTargetType.VAGINAL},
-            //On Desk
-            {"机寝位", FemaleTargetType.VAGINAL},
-            //Back/Rear (Doggy) Pounding Piston
-            {"背面杭打ちピストン", FemaleTargetType.VAGINAL},
-            //Back/Rear (Doggy) Side 
-            {"背面側位", FemaleTargetType.VAGINAL},
-            //Seated Facing
-            {"椅子対面", FemaleTargetType.VAGINAL},
-            //Prone Doggy Style
-            {"伏せ後背位", FemaleTargetType.VAGINAL},
-            //Arm Pull Chair Doggy
-            {"腕引っ張り椅子バック", FemaleTargetType.VAGINAL},
-            //Floor Backward Sitting
-            {"床背面座位", FemaleTargetType.VAGINAL},
-            //Kneeling Backward Sitting
-            {"膝立て背面座位", FemaleTargetType.VAGINAL},
-            //One Leg Up Wall Doggy
-            {"片足上げ壁バック", FemaleTargetType.VAGINAL},
-            //Spread Legs Missionary
-            {"大股開き正常位", FemaleTargetType.VAGINAL},
-            //Eki-ben
-            {"駅弁", FemaleTargetType.VAGINAL},
-            //Lying/Sleeping Back (Doggy?)
-            {"寝バック", FemaleTargetType.VAGINAL},
-            //Mating Press
-            {"種付けプレス", FemaleTargetType.VAGINAL},
-            //Chair Backward
-            {"椅子背面", FemaleTargetType.VAGINAL},
-            //Leg-Hanging Face-to-Face Sitting Position
-            {"足掛け対面座位", FemaleTargetType.VAGINAL},
-            //Side Position
-            {"側位", FemaleTargetType.VAGINAL},
-            // banana boat cowgirl, doggy
-            {"バナナボート騎乗位", FemaleTargetType.VAGINAL},
-            {"バナナボート後背位", FemaleTargetType.VAGINAL},
-            // tennis table
-            {"卓球台バック", FemaleTargetType.VAGINAL},
-            {"卓球台正常位", FemaleTargetType.VAGINAL},
-            // sofa cowgirl
-            {"ソファ騎乗位", FemaleTargetType.VAGINAL},
-            // box doggy
-            {"箱バック", FemaleTargetType.VAGINAL},
-            //pressed from behind
-            {"押し付けバック", FemaleTargetType.VAGINAL},
-            //beach ball normal
-            {"ビーチボール正常位", FemaleTargetType.VAGINAL},
-            //floating doggy
-            {"浮き輪後背位", FemaleTargetType.VAGINAL},
-            // fence doggy
-            {"フェンス後背位", FemaleTargetType.VAGINAL},
-            // volleyball net doggystyle
-            {"ネット後背位", FemaleTargetType.VAGINAL},
-            
+            //{"VAGINAL", FemaleTargetType.VAGINAL},
+            {"正常位", FemaleTargetType.VAGINAL}, //missionary
+            {"壁立ちバック", FemaleTargetType.VAGINAL}, //Against Wall Behind / Wall-standing doggy
+            {"後背位", FemaleTargetType.VAGINAL}, //Doggy Style
+            {"中腰バック", FemaleTargetType.VAGINAL}, //Kneeling Behind / Squatting doggy
+            {"側位", FemaleTargetType.VAGINAL}, //Spooning
+            {"騎乗位", FemaleTargetType.VAGINAL}, //Cowgirl
+            {"胸もみ騎乗位", FemaleTargetType.VAGINAL}, //Breast massage cowgirl
+            {"屈脚位", FemaleTargetType.VAGINAL}, //Bent Missionary
+            {"手つなぎ正常位", FemaleTargetType.VAGINAL},//Hand holding missionary
+            {"立位", FemaleTargetType.VAGINAL}, //Standing
+            {"胸モミ正常位", FemaleTargetType.VAGINAL}, //Missionary Groping
+            {"胸モミ騎乗", FemaleTargetType.VAGINAL}, //Cowgirl Groping
+            {"床拘束正常位", FemaleTargetType.VAGINAL}, //Floor Bondage Missionary / Restrained missionary
+            {"床拘束正常位２", FemaleTargetType.VAGINAL}, //Floor Bondage Missionary 2
+            {"嫌がり正常位", FemaleTargetType.VAGINAL}, //Forced Missionary
+            {"立ちバック", FemaleTargetType.VAGINAL}, // Standing Behind / Standing doggy
+            {"突き上げバック", FemaleTargetType.VAGINAL}, //Thrusting doggy
+            {"駅弁", FemaleTargetType.VAGINAL}, // Lifting
+            {"椅子背面座位", FemaleTargetType.VAGINAL}, //Chair rear-facing sitting
+            {"しゃがみバック", FemaleTargetType.VAGINAL}, //Crouching doggy
+            {"ソファー側位", FemaleTargetType.VAGINAL}, //Sofa side
+            {"ソファー騎乗位", FemaleTargetType.VAGINAL}, //Sofa cowgirl
+            {"寝バック", FemaleTargetType.VAGINAL}, //Sleeping doggy
+            {"対面座位", FemaleTargetType.VAGINAL}, //Face-to-face position
+            {"椅子胸もみ背面座位", FemaleTargetType.VAGINAL}, //Chair breast massage rear-facing sitting
+            {"壁押し付けバック", FemaleTargetType.VAGINAL}, //Wall-pressed doggy
+            {"立ち松葉", FemaleTargetType.VAGINAL}, //Standing pine-needle
+            {"しゃちほこ素股", FemaleTargetType.VAGINAL}, //Shachihoko sumata
+            {"キャノンボール", FemaleTargetType.VAGINAL}, //Cannonball
+            {"スパイダー騎乗位", FemaleTargetType.VAGINAL}, //Spider cowgirl
+            {"足掛けバック", FemaleTargetType.VAGINAL}, //Legs-hooked doggy
+            {"胸もみ正常位", FemaleTargetType.VAGINAL}, //Breast massage missionary
+            {"背面騎乗位", FemaleTargetType.VAGINAL}, //Reverse cowgirl
+            {"カウンターバック", FemaleTargetType.VAGINAL}, //Counter doggy
+            {"ギロチンバック", FemaleTargetType.VAGINAL}, //Guillotine doggy
+            {"バスタブ後背位", FemaleTargetType.VAGINAL}, //Bathtub doggy
+            {"便座かがみバック", FemaleTargetType.VAGINAL}, //Toilet seat doggy
+            {"壁穴後背位", FemaleTargetType.VAGINAL}, //Ground-hole doggy
+            {"机後背位", FemaleTargetType.VAGINAL}, //Doggy style at desk
+            {"水中バック", FemaleTargetType.VAGINAL}, //Underwater doggy
+            {"縄拘束バック", FemaleTargetType.VAGINAL}, //Rope restraint doggy
+            {"触手バック", FemaleTargetType.VAGINAL}, //Tentacle doggy
+            {"階段後背位", FemaleTargetType.VAGINAL}, //Doggy on stairs
+            {"チングリ背面騎乗位", FemaleTargetType.VAGINAL}, //Thigh reverse cowgirl
+            {"トイレ背面座位", FemaleTargetType.VAGINAL}, //Toilet reverse cowgirl
+            {"バスタブ背面座位", FemaleTargetType.VAGINAL}, //Bathtub reverse cowgirl
+            {"ベンチ騎乗位", FemaleTargetType.VAGINAL}, //Bench cowgirl
+            {"本棚騎乗位", FemaleTargetType.VAGINAL}, //Bookshelf cowgirl
+            {"背面座位", FemaleTargetType.VAGINAL}, //Reverse cowgirl
+            {"ベンチ正常位", FemaleTargetType.VAGINAL}, //Bench missionary
+            {"マングリ正常位", FemaleTargetType.VAGINAL}, //Spread-leg missionary
+            {"卓上正常位", FemaleTargetType.VAGINAL}, //Table missionary
+            {"吊るし正常位", FemaleTargetType.VAGINAL}, //Hanging missionary
+            {"浮き輪正常位", FemaleTargetType.VAGINAL}, //Swim ring missionary
+            {"触手正常位", FemaleTargetType.VAGINAL}, //Tentacle missionary
+            {"壁Y字バランス挿入", FemaleTargetType.VAGINAL}, //Wall Y-balanced insertion
+            {"またがり対面座位", FemaleTargetType.VAGINAL}, //Straddle Face-to-Face
+
             //anal
-            //{"ANAL", femaleTargetType.ANAL},
-            {"Cowgirl Restrain Anal", FemaleTargetType.ANAL},
+            //{"ANAL", FemaleTargetType.ANAL},
+            {"アナル正常位", FemaleTargetType.ANAL}, //Anal Missionary
+            {"アナル後背位", FemaleTargetType.ANAL}, //Anal Doggystyle
+            {"アナル椅子後背位", FemaleTargetType.ANAL}, //Anal Doggy on Chair
+            {"アナル壁立ち後背位", FemaleTargetType.ANAL}, //Against Wall Anal
+            {"アナル壁立ちバック", FemaleTargetType.ANAL}, //Anal wall doggy
+            {"アナル開脚バック", FemaleTargetType.ANAL}, //Anal spread-legged doggy
+            {"アナルマングリ正常位", FemaleTargetType.ANAL}, //Anal spread missionary
+
+            // Aicomi Female-led HScene Category
+            //vaginal
+            //{"VAGINAL", FemaleTargetType.VAGINAL},
+            {"女主導手コキ素股", FemaleTargetType.LEFTHAND}, //Handjob Humping (Her Lead)
+            {"女主導椅子素股", FemaleTargetType.VAGINAL}, //Sitting Humping (Her Lead)
+            {"女主導背面騎乗", FemaleTargetType.VAGINAL}, //Reverse Cowgirl (Her Lead)
+            {"女主導騎乗", FemaleTargetType.VAGINAL}, //Cowgirl (Her Lead)
+            {"女主導騎乗素股", FemaleTargetType.VAGINAL}, //Cowgirl Humping (Her Lead)
+            {"アナル背面騎乗位", FemaleTargetType.ANAL}, //Anal reverse cowgirl
+            {"騎乗素股", FemaleTargetType.INTERCRURAL}, //Cowgirl intercrural
+            {"手コキ素股", FemaleTargetType.INTERCRURAL}, //Handjob intercrural
+            {"椅子素股", FemaleTargetType.INTERCRURAL}, //Chair intercrural
+            //{"xxxxx", FemaleTargetType.VAGINAL}, //Chair Face-to-Face Sitting
 
             //intercrucial
-            //{"INTERCRURAL", femaleTargetType.INTERCRURAL},
-            {"Back Thigh Job", FemaleTargetType.INTERCRURAL},
-            {"Lying Cowgirl Ass Hump", FemaleTargetType.INTERCRURAL},
-            {"Sit, Straddle Thigh Job", FemaleTargetType.INTERCRURAL},
-            {"Desk, Back Ass Hump", FemaleTargetType.INTERCRURAL},
-            //not implemented, placeholder
-            {"[Armpitjob]", FemaleTargetType.INTERCRURAL},
-            {"Lying, Massage with knee", FemaleTargetType.INTERCRURAL},
+            //{"INTERCRURAL", FemaleTargetType.INTERCRURAL},
+            {"立ち素股", FemaleTargetType.INTERCRURAL}, //Standing intercrural
+
 
             //footjob
-            //{"FOOTJOB", femaleTargetType.LEFTFOOT},
-            {"[Footjob sitting]", FemaleTargetType.LEFTFOOT},
-            {"Cinderella", FemaleTargetType.LEFTFOOT},
-            {"Piledriver Massage", FemaleTargetType.RIGHTFOOT},
-            {"Sitting Penis Massage", FemaleTargetType.LEFTFOOT},
-            {"Under Pressure", FemaleTargetType.RIGHTFOOT},
-            {"立ち足コキ", FemaleTargetType.LEFTFOOT},
-            //poses using both feet, set to use left foot for now
-            {"Back Cuddle", FemaleTargetType.LEFTFOOT},
-            {"Desk Bending Over Footjob", FemaleTargetType.LEFTFOOT},
-            {"Desk Penis Massage", FemaleTargetType.LEFTFOOT},
-            {"Desk, Footjob", FemaleTargetType.LEFTFOOT},
-            {"Laying Belly Footjob", FemaleTargetType.LEFTFOOT},
-            {"床足コキ", FemaleTargetType.LEFTFOOT},
-            {"Lying Massage with 2 feet", FemaleTargetType.LEFTFOOT},
-            {"Lying Rim & Foot Jobs", FemaleTargetType.LEFTFOOT},
-            {"Lying Rimjob 2", FemaleTargetType.LEFTFOOT},
-            {"椅子足コキ", FemaleTargetType.LEFTFOOT},
-            {"Sitting Footjob 2", FemaleTargetType.LEFTFOOT},
+            //{"FOOTJOB", FemaleTargetType.LEFTFOOT},
+            {"立ち足コキ", FemaleTargetType.LEFTFOOT}, //Standing Footjob
+            {"床足コキ", FemaleTargetType.LEFTFOOT}, //Floor footjob
+            {"椅子足コキ", FemaleTargetType.RIGHTFOOT}, //Chair footjob
+            {"机下足コキ", FemaleTargetType.LEFTFOOT}, //Under-desk footjob
+            {"机下足愛撫", FemaleTargetType.LEFTFOOT}, //Under-desk foot caress
+            {"男椅子拘束足コキ", FemaleTargetType.LEFTFOOT}, //Man chair restrained footjob
+            {"バスタブ足コキ", FemaleTargetType.LEFTFOOT}, //Bathtub footjob
+
 
             // 3P - none of these currently implemented
             // 3P - 2 girls, 1 guy - HJ
-            //{"GIRL1", femaleTargetType.LEFTHAND},
-            //{"GIRL2", femaleTargetType.LEFTHANDSWAP},
+            //{"GIRL1", FemaleTargetType.LEFTHAND},
+            //{"GIRL2", FemaleTargetType.LEFTHANDSWAP},
             //footjob & HJ
-            {"足コキ＆手コキ", FemaleTargetType.LEFTHAND},
-            {"足コキ＆手コキ入れ替え", FemaleTargetType.LEFTHANDSWAP},
-            //nipple lick HJ & BJ
-            {"乳首舐め手コキ＆フェラ", FemaleTargetType.LEFTHAND},
-            {"乳首舐め手コキ＆フェラ入れ替え", FemaleTargetType.LEFTHANDSWAP},
+            {"手コキ舐めA", FemaleTargetType.LEFTHAND}, //Double handjob + Licking A
+            {"手コキ舐めB", FemaleTargetType.LEFTHANDSWAP}, //Double handjob + Licking B
+
 
             // 3P - 2 girls, 1 guy - BJ
-            //{"GIRL1", femaleTargetType.ORAL},
-            //{"GIRL2", femaleTargetType.ORALSWAP},
+            //{"GIRL1", FemaleTargetType.ORAL},
+            //{"GIRL2", FemaleTargetType.ORALSWAP},
             //double fellatio
-            {"Wフェラ", FemaleTargetType.ORAL},
-            {"Wフェラ入れ替え", FemaleTargetType.ORALSWAP},
-            {"Fellatio & Nip Licking", FemaleTargetType.ORAL},
-            {"Fellatio & Nip Licking (Switch Girl)", FemaleTargetType.ORALSWAP},
-            //Piledriver ball licking & BJ
-            {"ちんぐり玉舐め＆フェラ", FemaleTargetType.ORAL},
-            {"ちんぐり玉舐め＆フェラ入れ替え", FemaleTargetType.ORALSWAP},
-            //Sitting double fellatio
-            {"座りWフェラ", FemaleTargetType.ORAL},
-            {"座りWフェラ入れ替え", FemaleTargetType.ORALSWAP},
+            {"フェラA", FemaleTargetType.ORAL}, //Double blowjob A
+            {"フェラB", FemaleTargetType.ORALSWAP}, // Double blowjob A
 
             // 3P - 2 girls, 1 guy - TJ
-            //{"GIRL1", femaleTargetType.BREASTS},
-            //{"GIRL2", femaleTargetType.BREASTSWAP},
+            //{"GIRL1", FemaleTargetType.BREASTS},
+            //{"GIRL2", FemaleTargetType.BREASTSWAP},
 
             // 3P - 2 girls, 1 guy - FJ
-            //{"GIRL1", femaleTargetType.LEFTFOOT},
-            //{"GIRL2", femaleTargetType.LEFTFOOTSWAP},
+            //{"GIRL1", FemaleTargetType.LEFTFOOT},
+            //{"GIRL2", FemaleTargetType.LEFTFOOTSWAP},
 
             // 3P - 2 girls, 1 guy - intercrural
-            //{"GIRL1", femaleTargetType.INTERCRURAL},
-            //{"GIRL2", femaleTargetType.INTERCRURALSWAP},
+            //{"GIRL1", FemaleTargetType.INTERCRURAL},
+            //{"GIRL2", FemaleTargetType.INTERCRURALSWAP},
+            {"素股サンドA", FemaleTargetType.INTERCRURAL}, //Intercrural sandwich A
+            {"素股サンドB", FemaleTargetType.INTERCRURALSWAP}, //Intercrural sandwich B
 
             // 3P - 2 girls, 1 guy - Insert
-            //{"GIRL1", femaleTargetType.VAGINAL},
-            //{"GIRL2", femaleTargetType.VAGINALSWAP},
+            //{"GIRL1", FemaleTargetType.VAGINAL},
+            //{"GIRL2", FemaleTargetType.VAGINALSWAP},
             //cowgirl & cunnilingus
-            {"騎乗位クンニ", FemaleTargetType.VAGINAL},
-            {"騎乗位クンニ入れ替え", FemaleTargetType.VAGINALSWAP},
-            {"Doggy & Cunnilingus", FemaleTargetType.VAGINAL},
-            {"Doggy & Cunnilingus (Switch Girl)", FemaleTargetType.VAGINALSWAP},
+            {"騎乗位A", FemaleTargetType.VAGINAL}, //Double cowgirl A
+            {"騎乗位B", FemaleTargetType.VAGINALSWAP}, //Double cowgirl B
+            {"机バッククンニA", FemaleTargetType.VAGINAL}, //Desk doggy cunnilingus A
+            {"机バッククンニB", FemaleTargetType.VAGINALSWAP}, //Desk doggy cunnilingus B
+
             //doggy & fingering
-            {"後背位手マン", FemaleTargetType.VAGINAL},
-            {"後背位手マン入れ替え", FemaleTargetType.VAGINALSWAP},
+            {"後背位＋手マンA", FemaleTargetType.VAGINAL}, //Doggy + fingering A
+            {"後背位＋手マンB", FemaleTargetType.VAGINALSWAP}, //Doggy + fingering B
+
             //missionary & fingering
-            {"正常位手マン", FemaleTargetType.VAGINAL},
-            {"正常位手マン入れ替え", FemaleTargetType.VAGINALSWAP},
-            {"Missionary & Fingering 2", FemaleTargetType.VAGINAL},
-            {"Missionary & Fingering 2 (Switch Girl)", FemaleTargetType.VAGINALSWAP},
+
             //reverse cowgirl & fingering
-            {"背面騎乗位手マン", FemaleTargetType.VAGINAL},
-            {"背面騎乗位手マン入れ替え", FemaleTargetType.VAGINALSWAP},
+
             //reverse sitting & cunnilingus
-            {"背面座位クンニ", FemaleTargetType.VAGINAL},
-            {"背面座位クンニ入れ替え", FemaleTargetType.VAGINALSWAP}
-        };
 
-        internal static readonly Dictionary<string, MaleTargetType> animationMaleTargetDictionary = new Dictionary<string, MaleTargetType>
-        {
-            //male hand (masturbation) - not implemented
-            {"Standing Cunni & Masturbation", MaleTargetType.RIGHTHAND}
-        };
+            //3P - 1 girl, 2 guys
+            {"W駅弁", FemaleTargetType.VAGINAL}, // W sandwich
+            {"二竿フェラ", FemaleTargetType.ORAL}, //Two way blowjob
+            {"背面騎乗＋正常位", FemaleTargetType.VAGINAL}, //Reverse cowgirl + Missionary
+            {"対面騎乗＋後背位", FemaleTargetType.ANAL}, //Face-to-face cowgirl + Doggy style
+            {"後背位＋フェラ", FemaleTargetType.VAGINAL}, //Doggystyle + Blowjob
+            {"側位＋フェラ", FemaleTargetType.VAGINAL}, // Sideways Blowjob
+            {"壁穴後背位＋フェラ", FemaleTargetType.VAGINAL}, // Wall hole back + Blowjob
+            {"空中バック＋フェラ", FemaleTargetType.VAGINAL}, //Carry doggy + Blowjob
+            {"胸揉みアナル挿入＋クンニ", FemaleTargetType.ANAL}, // Breast fondling, anal insertion + cunnilingus
+            
 
+
+            //5P - 4 girls, 1 guy - ???
+            /*
+           // 5P - Boobjob
+           {"5PパイズリA", FemaleTargetType.BREASTS}, //5P titty fuck A
+           {"5PパイズリB", FemaleTargetType.BREASTS}, //5P titty fuck B
+           {"5PパイズリC", FemaleTargetType.BREASTS}, //5P titty fuck C
+           {"5PパイズリD", FemaleTargetType.BREASTS}, //5P titty fuck D
+           // 5P - missionary
+           {"5P正常位A", FemaleTargetType.VAGINAL}, //5P missionary A
+           {"5P正常位B", FemaleTargetType.VAGINAL}, //5P missionary B
+           {"5P正常位C", FemaleTargetType.VAGINAL}, //5P missionary C
+           {"5P正常位D", FemaleTargetType.VAGINAL}, //5P missionary D
+           // 5P - licking
+           {"5P舐めA", FemaleTargetType.ORAL}, //5P licking A
+           {"5P舐めB", FemaleTargetType.ORAL}, //5P licking B
+           {"5P舐めC", FemaleTargetType.ORAL}, //5P licking C
+           {"5P舐めD", FemaleTargetType.ORAL}, //5P licking D
+           //5P cowgirl
+           {"5P騎乗位A", FemaleTargetType.VAGINAL}, //5P cowgirl A
+           {"5P騎乗位B", FemaleTargetType.VAGINAL}, //5P cowgirl B
+           {"5P騎乗位C", FemaleTargetType.VAGINAL}, //5P cowgirl C
+           {"5P騎乗位D", FemaleTargetType.VAGINAL}, //5P cowgirl D
+           */
+
+        };
     }
 }

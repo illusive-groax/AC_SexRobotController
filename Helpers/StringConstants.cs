@@ -1,9 +1,17 @@
-﻿namespace KKS_SexRobotController
+﻿namespace AC_SexRobotController.Helpers
 {
     internal sealed class StringConstants
     {
+        internal const string GAME_NAME = "Aicomi";
+        internal const string GAME_VR_NAME = "AicomiVR";
+
+        internal const string PLUGIN_VERSION = "1.0.0";
+        internal const string PLUGIN_NAME = "AC_SexRobotController";
+        internal const string PLUGIN_GUID = "AC_SexRobotController";
+
         /** Path to file containing the names of the animations and positions */
-        internal const string ANIMATION_FILE_PATH = ".\\BepinEx\\Plugins\\KKS_SexRobotController\\sexRobotController.txt";
+        internal const string ANIMATION_FILE_PATH = ".\\BepinEx\\Plugins\\AC_SexRobotController\\SexRobotController.txt";
+        internal const string UNKNOWN_ANIMATIONS_FILE_PATH = ".\\BepinEx\\Plugins\\AC_SexRobotController\\animations.txt";
 
         /** BepinEx: Plugin Settings Menu **/
         // Multiplier settings
@@ -50,6 +58,7 @@
         internal const string ToggleSerialPortConnection = "Connect/Disconnect Sex Robot Hotkey";
         internal const string SerialPortConfig = "Serial Port For Sex Robot";
         internal const string SerialPortConfig_Tooltip = "SerialPorts";
+        // how often the physical device should be updated
         internal const string SexRobotUpdateFrequencyConfig = "Sex Robot Update Frequency";
         internal const string SexRobotUpdateFrequencyConfig_Tooltip = "Sex Robot Update Frequencies";
         internal const string SerialPortStatus = "Serial Port Status Information";
@@ -59,10 +68,10 @@
         // General settings
         internal const string SexRobotGeneralSection = "General";
         internal const string BepinExDebugOutput = "BepInEx Debug: Console Output";
-        internal const string BepinExPrintPosition = "BepInEx Debug: Print position (console)";
-        internal const string BepinExPrintPosition_Tooltip = "Prints to console the current sex animation if not recorded in animation list";
-        internal const string ReadPositionNamesFromFile = "Read positions from file";
-        internal const string ReadPositionNamesFromFile_Tooltip = "Reads positions and their mapping from file instead of using the static list in this library.";
+        internal const string ReadAnimationsFromFile = "Read animations from file?";
+        internal const string ReadAnimationsFromFile_Tooltip = "Reads animations and their mapping from file, adding those not present to the Plugin.";
+        internal const string WriteNotFoundPositionsToFile = "Write animation names to file?";
+        internal const string WriteNotFoundPositionsToFile_Tooltip = "Writes the animations which are currently not available in the Plugin to a file.";
 
         /** Buttons **/
         // connect robot
@@ -90,5 +99,12 @@
         /** Status messages **/
         internal const string Status_CurrentStrokeMultiplierValue = "Stroke multiplier: ";
         internal const string Status_SpeedLimited = "Speed limited: ";
+
+        internal static readonly string[] SerialPorts = [
+            "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "COM10",
+            "COM11", "COM12", "COM13", "COM14", "COM15", "COM16", "COM17", "COM18", "COM19",
+            "COM20", "COM21", "COM22", "COM23", "COM24", "COM25", "COM26", "COM27", "COM28",
+            "COM29", "COM30", "COM31", "COM32", "COM33"
+        ];
     }
 }
