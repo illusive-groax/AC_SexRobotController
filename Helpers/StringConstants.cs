@@ -5,7 +5,7 @@
         internal const string GAME_NAME = "Aicomi";
         internal const string GAME_VR_NAME = "AicomiVR";
 
-        internal const string PLUGIN_VERSION = "1.0.0";
+        internal const string PLUGIN_VERSION = "1.1.0";
         internal const string PLUGIN_NAME = "AC_SexRobotController";
         internal const string PLUGIN_GUID = "AC_SexRobotController";
 

@@ -3,12 +3,16 @@ using AC_SexRobotController.Plugin;
 using H;
 using System;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 namespace AC_SexRobotController.RobotController
 {
     internal sealed class RobotMovement
     {
+        // rough number retrieved from several iterations using penisLength
+        // this is required to account for those animations where the tip doesn't properly penetrate
+        private const float PENIS_LENGTH = 0.187f;
         private static SerialPortConnection _serialPortConnection;
         private static readonly Lazy<RobotMovement> _instance = new(() => new RobotMovement());
 
@@ -346,12 +350,14 @@ namespace AC_SexRobotController.RobotController
                 // Calculate the center point between the two penis's balls
                 Vector3 malePenisBallsCenterPoint = (_malePenisLeftBall.position + _malePenisRightBall.position) / 2.0f;
 
-                // Calculate male's penis length
-                float malePenisLength = Vector3.Distance(_malePenisBase.position, _malePenisTip.position);
-
                 // Vector from the selected male's penis's base to tip
                 Vector3 malePenisXAxis = _malePenisTip.position - _malePenisBase.position;
 
+                // Calculate male's penis length
+                float malePenisLength = Vector3.Distance(_malePenisBase.position, _malePenisTip.position);
+                // calculate the difference between the known and the current
+                float diffPenisLength = PENIS_LENGTH - malePenisLength;
+                
                 // Use the male's penis's base and the male's penis's balls center point to establish the Z reference axis
                 Vector3 malePenisZAxis = Vector3.Cross(malePenisXAxis, malePenisBallsCenterPoint - _malePenisBase.position);
                 malePenisZAxis = (malePenisXAxis.magnitude / malePenisZAxis.magnitude) * malePenisZAxis;
@@ -360,7 +366,7 @@ namespace AC_SexRobotController.RobotController
                 Vector3 malePenisYAxis = Vector3.Cross(malePenisXAxis, malePenisZAxis);
                 malePenisYAxis = (malePenisXAxis.magnitude / malePenisYAxis.magnitude) * malePenisYAxis;
 
-                Vector3 femaleTargetYAxis;
+                Vector3 femaleTargetYAxis = new(0.0f, 0.0f, 0.0f);
                 Vector3 femaleTargetXAxis = new(0.0f, 0.0f, 0.0f);
                 Vector3 femaleTargetZAxis = new(0.0f, 0.0f, 0.0f);
                 Vector3 femaleTargetToMalePenisBase = new(0.0f, 0.0f, 0.0f);
@@ -527,6 +533,25 @@ namespace AC_SexRobotController.RobotController
                     femaleTargetToMalePenisBase = _femaleVagina.position - _malePenisBase.position;
                 }
 
+                // check the value, if the value differs, update the X-Axis to use a more "correct" value
+                // the reason for this is some poses doesn't penetrate properly (the tip gets "pushed" down, leading to no movement)
+                // do this at the end to not impact too much the Y/Z-Axis
+                if (diffPenisLength > malePenisLength)
+                {
+                    if (float.IsNegative(malePenisXAxis.x))
+                        diffPenisLength = -diffPenisLength;
+                    malePenisXAxis.x = diffPenisLength;
+                    //AC_SexRobotControllerPlugin.LogDebug("diffPenisLength: " + diffPenisLength);
+                }
+                // however for other animations, like the sideways position, the Y-Axis is used
+                // without this check, there would be no movement unless the speed is set to max
+                if (AnimationName == "側位")
+                {
+                    if (float.IsNegative(malePenisXAxis.y))
+                        diffPenisLength = -diffPenisLength;
+                    malePenisXAxis.y = diffPenisLength;
+                }
+
                 // Calculate X(L0) for robot based on the reference X axis and the vector from the female's vagina's labia trigger to the male's penis's base collider
                 float robotL0 = Vector3.Dot(malePenisXAxis, femaleTargetToMalePenisBase) / (malePenisXAxis.magnitude * malePenisXAxis.magnitude);
 
@@ -597,10 +622,10 @@ namespace AC_SexRobotController.RobotController
 
                 if (AC_SexRobotControllerPlugin.DiagnosticsConfig.Value)
                 {
-                    AC_SexRobotControllerPlugin.LogInfo("_malePenisBase: " + _malePenisBase.position.x.ToString() + ", " + _malePenisBase.position.y.ToString() + ", " + _malePenisBase.position.z.ToString());
-                    AC_SexRobotControllerPlugin.LogInfo("_malePenisTip: " + _malePenisTip.position.x.ToString() + ", " + _malePenisTip.position.y.ToString() + ", " + _malePenisTip.position.z.ToString());
-                    AC_SexRobotControllerPlugin.LogInfo("_malePenisLeftBall: " + _malePenisLeftBall.position.x.ToString() + ", " + _malePenisLeftBall.position.y.ToString() + ", " + _malePenisLeftBall.position.z.ToString());
-                    AC_SexRobotControllerPlugin.LogInfo("_malePenisRightBall: " + _malePenisRightBall.position.x.ToString() + ", " + _malePenisRightBall.position.y.ToString() + ", " + _malePenisRightBall.position.z.ToString());
+                    AC_SexRobotControllerPlugin.LogInfo("malePenisBase: " + _malePenisBase.position.x.ToString() + ", " + _malePenisBase.position.y.ToString() + ", " + _malePenisBase.position.z.ToString());
+                    AC_SexRobotControllerPlugin.LogInfo("malePenisTip: " + _malePenisTip.position.x.ToString() + ", " + _malePenisTip.position.y.ToString() + ", " + _malePenisTip.position.z.ToString());
+                    AC_SexRobotControllerPlugin.LogInfo("malePenisLeftBall: " + _malePenisLeftBall.position.x.ToString() + ", " + _malePenisLeftBall.position.y.ToString() + ", " + _malePenisLeftBall.position.z.ToString());
+                    AC_SexRobotControllerPlugin.LogInfo("malePenisRightBall: " + _malePenisRightBall.position.x.ToString() + ", " + _malePenisRightBall.position.y.ToString() + ", " + _malePenisRightBall.position.z.ToString());
                     AC_SexRobotControllerPlugin.LogInfo("malePenisBallsCenterPoint: " + malePenisBallsCenterPoint.x.ToString() + ", " + malePenisBallsCenterPoint.y.ToString() + ", " + malePenisBallsCenterPoint.z.ToString());
                     AC_SexRobotControllerPlugin.LogInfo("malePenisLength: " + malePenisLength.ToString());
                     AC_SexRobotControllerPlugin.LogInfo("malePenisXAxis: " + malePenisXAxis.x.ToString() + ", " + malePenisXAxis.y.ToString() + ", " + malePenisXAxis.z.ToString());

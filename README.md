@@ -108,4 +108,4 @@ The error can be found in the BepInEx Log (found in `<GameDir>\BepInEx`) for err
 - VR Support
 - 3P
 - 5P
-- Improving the movement calculations (currently none of the animations does a full movement cycle when compared to the plugin I developed for HS2 and KKS).
+- Improving the movement calculations (jerky movement, lack of movement, sudden speed increase, etc.).

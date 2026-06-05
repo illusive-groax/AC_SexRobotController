@@ -163,7 +163,10 @@ namespace AC_SexRobotController.Helpers
             {BodyBone.BALLS_L, "cf_j_dan_f_L"},
             {BodyBone.BALLS_R, "cf_j_dan_f_R"}
         };
-
+        /**
+         * TODO: Some of these doesn't properly animate, therefore commented out for now
+         * Need to check later on whether or not I can match the palm, tongue, etc. or just ignore them
+         */
         internal static readonly Dictionary<string, FemaleTargetType> animationFemaleTargetDictionary = new()
         {
             // Schema: {ANIMATION NAME, FEMALE TARGET(S) TO USE IN REGARD TO MAPPING TO THE MALE'S PENIS TARGET}
@@ -171,22 +174,22 @@ namespace AC_SexRobotController.Helpers
             // Aicomi Service HScene Category
             //handjob
             //{"HANDJOB", FemaleTargetType.LEFTHAND}, 
-            {"嫌がり手コキ", FemaleTargetType.LEFTHAND}, // Handjob            
+            {"嫌がり手コキ", FemaleTargetType.LEFTHAND}, // Handjob
             {"手コキ", FemaleTargetType.LEFTHAND}, //Handjob
             {"無理矢理手コキ", FemaleTargetType.RIGHTHAND}, //Forced Handjob
-            {"亀頭弄り", FemaleTargetType.RIGHTHAND}, //Glans play
-            {"立ち手コキ", FemaleTargetType.RIGHTHAND}, //Standing handjob
+            //{"亀頭弄り", FemaleTargetType.RIGHTHAND}, //Glans play
+            //{"立ち手コキ", FemaleTargetType.RIGHTHAND}, //Standing handjob
             {"横向き手コキ", FemaleTargetType.RIGHTHAND}, //Side-facing handjob
             {"椅子手コキ", FemaleTargetType.RIGHTHAND}, //Chair handjob
-            {"背面手コキ", FemaleTargetType.LEFTHAND}, //Reverse handjob
+            {"背面手コキ", FemaleTargetType.RIGHTHAND}, //Reverse handjob
             {"開脚手コキ", FemaleTargetType.LEFTHAND}, //Spread-leg handjob
-            {"逆さ手コキ", FemaleTargetType.LEFTHAND}, //Reverse handjob
+            {"逆さ手コキ", FemaleTargetType.RIGHTHAND}, //Reverse handjob
             {"脱力手コキ", FemaleTargetType.RIGHTHAND}, //weak handjob
 
             //blowjob
             //{"ORAL", FemaleTargetType.ORAL},
             {"フェラ", FemaleTargetType.ORAL}, //Fellatio/Blowjob
-            {"ノーハンド先舐め", FemaleTargetType.ORAL}, //Licking Penis Tip / No-hands tip lick
+            //{"ノーハンド先舐め", FemaleTargetType.ORAL}, //Licking Penis Tip / No-hands tip lick
             {"立ちノーハンドフェラ", FemaleTargetType.ORAL}, //Standing Blowjob
             {"椅子ノーハンドフェラ", FemaleTargetType.ORAL}, //Sitting No-Hand Blowjob / No-hands blowjob on chair
             {"ディープスロート", FemaleTargetType.ORAL}, //Deepthroat
@@ -303,7 +306,7 @@ namespace AC_SexRobotController.Helpers
             {"騎乗素股", FemaleTargetType.INTERCRURAL}, //Cowgirl intercrural
             {"手コキ素股", FemaleTargetType.INTERCRURAL}, //Handjob intercrural
             {"椅子素股", FemaleTargetType.INTERCRURAL}, //Chair intercrural
-            //{"xxxxx", FemaleTargetType.VAGINAL}, //Chair Face-to-Face Sitting
+            {"椅子対面座位", FemaleTargetType.VAGINAL}, //Chair Face-to-Face Sitting
 
             //intercrucial
             //{"INTERCRURAL", FemaleTargetType.INTERCRURAL},
@@ -314,7 +317,7 @@ namespace AC_SexRobotController.Helpers
             //{"FOOTJOB", FemaleTargetType.LEFTFOOT},
             {"立ち足コキ", FemaleTargetType.LEFTFOOT}, //Standing Footjob
             {"床足コキ", FemaleTargetType.LEFTFOOT}, //Floor footjob
-            {"椅子足コキ", FemaleTargetType.RIGHTFOOT}, //Chair footjob
+            {"椅子足コキ", FemaleTargetType.LEFTFOOT}, //Chair footjob (starts with left, speedup: both)
             {"机下足コキ", FemaleTargetType.LEFTFOOT}, //Under-desk footjob
             {"机下足愛撫", FemaleTargetType.LEFTFOOT}, //Under-desk foot caress
             {"男椅子拘束足コキ", FemaleTargetType.LEFTFOOT}, //Man chair restrained footjob

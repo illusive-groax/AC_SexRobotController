@@ -3,6 +3,7 @@ using AC_SexRobotController.Helpers;
 using AC_SexRobotController.Plugin;
 using H;
 using ILLGAMES.Extensions;
+using ILLGAMES.Unity.BoneSwayCtrl;
 using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
