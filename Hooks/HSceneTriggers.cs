@@ -1,4 +1,5 @@
 ﻿using AC.Config;
+using AC_SexRobotController.Helpers;
 using AC_SexRobotController.Plugin;
 using AC_SexRobotController.RobotController;
 using H;
@@ -32,7 +33,7 @@ namespace AC_SexRobotController.Hooks
                         SexRobotController.CheckAnimationName();
 
                     _ac_SRC.ReadBodyPosition();
-                    SexRobotController.UpdateAnimationDictionary();
+                    //SexRobotController.UpdateAnimationDictionary();
                 }
                 catch (System.Exception ex)
                 {
@@ -60,8 +61,8 @@ namespace AC_SexRobotController.Hooks
             [HarmonyPatch(typeof(ConfigWindow), nameof(ConfigWindow.Start))]
             private static void OnOpen(ConfigWindow __instance)
             {
-                var btnInit = __instance.transform.FindLoop("btnInit").transform;
-                var btnTitle = __instance.transform.FindLoop("btnTitle").transform;
+                var btnInit = __instance.transform.FindLoop(StringConstants.CONFIG_MENU_RESET_BUTTON).transform;
+                var btnTitle = __instance.transform.FindLoop(StringConstants.CONFIG_MENU_TITLE_BUTTON).transform;
 
                 AC_SexRobotControllerPlugin.CreateControllerButtons(btnInit, btnTitle);
             }
