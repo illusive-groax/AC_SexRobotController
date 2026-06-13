@@ -1,6 +1,8 @@
 # AC_SexRobotController
 ## Aicomi Sex Robot Controller Plugin
 
+This Plugin is still in development, for more info, see the discussion on EroScripts: https://discuss.eroscripts.com/t/illgames-aicomi-sr6-bepinex-plugin-wip/317325
+
 **Main configuration menu accessed by hitting F1 and then clicking the Plugin settings button**
 ![plugin](Screenshots/bepinEx_menu.png)
 
