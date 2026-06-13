@@ -1,6 +1,13 @@
 # AC_SexRobotController
-## Aicomi Sex Robot Controller Plugin
 
+## Disclosure
+The baseline for the development was the code for the Sex Robot Controller from hs2robotics (https://github.com/hs2robotics/HS2_SexRobotController).
+
+Due to the issues with the animations and objects not properly colliding/collapsing on itself in Aicomi, AI assistance (ChatGTP) was used to update the original code from v1.0/v1.1.
+Only the code relating to updating the robot position (`RobotMovement:UpdateRobotPosition()`) based on the position of the characters in terms of the animation playing is AI-generated.
+The relevant code sections are maked with `#region AI_GENERATED_VARIABLES` and `#region AI_GENERATED` in the file `RobotMovement.cs`.
+
+## Aicomi Sex Robot Controller Plugin
 This Plugin is still in development, for more info, see the discussion on EroScripts: https://discuss.eroscripts.com/t/illgames-aicomi-sr6-bepinex-plugin-wip/317325
 
 **Main configuration menu accessed by hitting F1 and then clicking the Plugin settings button**
@@ -102,10 +109,3 @@ The error can be found in the BepInEx Log (found in `<GameDir>\BepInEx`) for err
 - 3P
 - 5P
 
-
-## Disclosure
-The baseline for the development was the code for the Sex Robot Controller from hs2robotics (https://github.com/hs2robotics/HS2_SexRobotController).
-
-Due to the issues with the animations and objects not properly colliding/collapsing on itself in Aicomi, AI assistance (ChatGTP) was used to update the original code from v1.0/v1.1.
-Only the code relating to updating the robot position (`RobotMovement:UpdateRobotPosition()`) based on the position of the characters in terms of the animation playing is AI-generated.
-The relevant code sections are maked with `#region AI_GENERATED_VARIABLES` and `#region AI_GENERATED` in the file `RobotMovement.cs`.
