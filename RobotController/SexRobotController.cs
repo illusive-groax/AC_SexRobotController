@@ -77,7 +77,7 @@ namespace AC_SexRobotController.RobotController
                 // set previous to the current to avoid multiple rewrites on current animation refresh
                 _robotMovement.PrevAnimationName = _robotMovement.AnimationName;
                 FileHandler.WriteToFile(_robotMovement.PrevAnimationName);
-                AC_SexRobotControllerPlugin.LogInfo("The animation name '" + _robotMovement.AnimationName + "' was written to file!");
+                AC_SexRobotControllerPlugin.LogInfo($"The animation name '{_robotMovement.AnimationName}' was written to file!");
             }
         }
 
@@ -135,8 +135,7 @@ namespace AC_SexRobotController.RobotController
             {
                 _sw.Reset();
                 this.HScene = null;
-                RobotMovement.GetInstance().UpdatePosition = false;
-                RobotMovement.GetInstance().AnimationChanged = false;
+                RobotMovement.GetInstance().HSceneEnding();
                 Instance = null;
             }
         }
@@ -163,16 +162,9 @@ namespace AC_SexRobotController.RobotController
                     // check if the animation has changed
                     if (_robotMovement.AnimationName != this.HScene.NowAnimationInfo.NameAnimation)
                         UpdateRobotMovement(this.HScene);
-                    // TODO: HScene.CtrlFlag.NowSpeedStateFast
-                    // Maybe use this to "fix" speed issues? if set, then Speed = Speed*2
-                    // Lowest: 0
-                    // Fastest: 1
-                    // => 0*2=0
-                    // => 0.5*2=1
-                    // => 1*2=2
                     _robotMovement.LoopType = this.HScene.CtrlFlag.LoopType;
-                    _robotMovement.AnimationSpeed = this.HScene.CtrlFlag.Speed;
                     _robotMovement.IsNowOrgasm = this.HScene.CtrlFlag.IsNowOrgasm;
+                    _robotMovement.AnimationSpeed = (this.HScene.CtrlFlag.IsNowOrgasm) ? AC_SexRobotControllerPlugin.RobotOrgasmSpeedMultiplier.Value : this.HScene.CtrlFlag.Speed;
                     _robotMovement.UpdateAnimationStatus();
                     _sw.Restart();
                 }

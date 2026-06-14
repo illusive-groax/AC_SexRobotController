@@ -105,6 +105,17 @@ namespace AC_SexRobotController.RobotController
             return _instance.Value;
         }
 
+        internal void HSceneEnding()
+        {
+            // HScene has ended, ensure the device stops moving
+            AnimationSpeed = 0;
+            LoopType = (int)BoneAnimationDefiner.LoopType.IDLE;
+            UpdatePosition = false;
+            AnimationChanged = false;
+            // send device home
+            SendTCodeHomeCommand();
+        }
+
         internal void UpdateAnimationStatus()
         {
             try
@@ -130,7 +141,7 @@ namespace AC_SexRobotController.RobotController
                 {
                     if (PrevAnimationName != AnimationName)
                     {
-                        AC_SexRobotControllerPlugin.LogInfo("The animation name was not found in the plugin dictonary: '" + AnimationName + "'.'");
+                        AC_SexRobotControllerPlugin.LogInfo($"The animation name was not found in the plugin dictonary: '{AnimationName}'.'");
                         WriteUnknownAnimationsToFile();
                         // set previous to the current to avoid multiple rewrites
                         PrevAnimationName = AnimationName;
@@ -153,7 +164,7 @@ namespace AC_SexRobotController.RobotController
             if (AC_SexRobotControllerPlugin.WriteAnimationsToFile.Value)
             {
                 FileHandler.WriteToFile(AnimationName);
-                AC_SexRobotControllerPlugin.LogInfo("The animation name '" + AnimationName + "' was written to file!");
+                AC_SexRobotControllerPlugin.LogInfo($"The animation name '{AnimationName}' was written to file!");
             }
         }
 
@@ -643,7 +654,7 @@ namespace AC_SexRobotController.RobotController
             }
             catch (Exception ex)
             {
-                AC_SexRobotControllerPlugin.LogDebug("Serial error: " + ex);
+                AC_SexRobotControllerPlugin.LogDebug("Serial error: " + ex.ToString());
             }
         }
         private void CalculateL0Movement()

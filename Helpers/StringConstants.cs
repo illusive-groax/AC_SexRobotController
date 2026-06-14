@@ -5,7 +5,7 @@
         internal const string GAME_NAME = "Aicomi";
         internal const string GAME_VR_NAME = "AicomiVR";
 
-        internal const string PLUGIN_VERSION = "1.2.1";
+        internal const string PLUGIN_VERSION = "1.2.2";
         internal const string PLUGIN_NAME = "AC_SexRobotController";
         internal const string PLUGIN_GUID = "AC_SexRobotController";
 
@@ -26,11 +26,20 @@
         internal const string ReadAnimationsFromFile_Tooltip = "Reads animations and their mapping from file, allowing to include animations currently not implemented in the Plugin.";
         internal const string WriteNotFoundPositionsToFile = "Write animation names to file?";
         internal const string WriteNotFoundPositionsToFile_Tooltip = "Writes the name of the animations which currently are not available in the Plugin to a file.";
-        // WIP: Disable options
         internal const string DisablePlugin = "Disable Plugin";
-        internal const string DisablePlugin_Tooltip = "Disables the plugin temporarily. Scene reload required for SR6 to connect and move according to scene animations(?).";
-        internal const string HideSettingsMultiplierButtons = "Hide multiplier buttons:";
-        internal const string HideSettingsMultiplierButtons_Tooltip = "Enabling this option ensures that no multiplier buttons are added to the Settings menu. Game restart required(?).";
+        internal const string DisablePlugin_Tooltip = "Disables the plugin. If re-enabled after a scene is loaded, you need to switch animations for the Plugin to be 'active' for the current scene. \n"
+            + "Menu buttons available after game restart (if the game was ended after the plugin was disabled).";
+        internal const string HideSettingsMultiplierButtons = "Hide multiplier buttons";
+        internal const string HideSettingsMultiplierButtons_Tooltip = "Enabling this option ensures that no multiplier buttons are added to the Settings menu. Game restart required.";
+
+        // Keyboard shortcuts
+        internal const string SexRobotKeyboardShortcutsSection = "Keyboard shortcuts";
+        internal const string ToggleSerialPortConnectionKey = "Connect/Disconnect Sex Robot";
+        internal const string ToggleStrokeLengthLimiterKey = "Stroke: Enable/Disable L0 Limiter";
+        internal const string IncreaseStrokeLengthMultiplierKey = "Stroke Length: Increase multiplier";
+        internal const string DecreaseStrokeLengthMultiplierKey = "Stroke Length: Decrease multiplier";
+        internal const string IncreaseStrokeSpeedMultiplierKey = "Stroke Speed: Increase multiplier";
+        internal const string DecreaseStrokeSpeedMultiplierKey = "Stroke Speed: Decrease multiplier";
 
         // Connection settings
         internal const string SexRobotConnectionSection = "Sex Robot: Connection";
@@ -54,6 +63,19 @@
         // speed
         internal const string RobotL0SpeedMultiplier = "Sex Robot (L0) Speed Multiplier";
         internal const string RobotL0AmplifierMultiplier_Tooltip = "Sex Robot (L0) Speed Multiplier: How fast should it respond to the tracked motion?";
+        // orgasm
+        internal const string RobotOrgasmSpeedMultiplier = "Sex Robot Orgasm Multiplier";
+        internal const string RobotOrgasmSpeedMultiplier_Tooltip = "Sex Robot Orgasm Multiplier: Set the speed to use for Orgasm (0: In-Game orgasm speed)";
+
+        // Limiter settings
+        internal const string SexRobotLimiterSection = "Sex Robot: L0 Limiter";
+        internal const string StrokeLengthLimiter = "Enable Limiter for L0?";
+        internal const string StrokeLengthLimiter_Tooltip = "Sets a limiter that overrides the default value. Useful when switching positions, where the default multiplier causes the stroking speed to be too fast/hard.";
+        internal const string LimitRobotL0IntensityMultiplierValue = "Sex Robot (L0) Length Limiter (Optional)";
+        internal const string LimitRobotL0IntensityMultiplierValue_Tooltip = "Sex Robot (L0) Length multiplier enabling the reduction of the L0 movement.";
+        internal const string LimitRobotL0SpeedMultiplierValue = "Sex Robot (L0) Speed Limiter (Optional)";
+        internal const string LimitRobotL0SpeedMultiplierValue_Tooltip = "Sex Robot (L0) Speed multiplier to limit the speed for animations where the tracking leads to too fast movement.";
+
         // min/max for the Axes
         internal const string SexRobotMinMaxSection = "Sex Robot: Min/Max Values";
         internal const string RobotL0Min = "Sex Robot (L0) Up/Down Min";
@@ -80,24 +102,6 @@
         internal const string RobotR2Min_Tooltip = "Sex Robot (R2) Pitch Min";
         internal const string RobotR2Max = "Sex Robot (R2) Pitch Max";
         internal const string RobotR2Max_Tooltip = "Sex Robot (R2) Pitch Max";
-
-        // Limiter settings
-        internal const string SexRobotLimiterSection = "Sex Robot L0 Limiter";
-        internal const string StrokeLengthLimiter = "Enable Limiter for L0?";
-        internal const string StrokeLengthLimiter_Tooltip = "Sets a limiter that overrides the default value. Useful when switching positions, where the default multiplier causes the stroking speed to be too fast/hard.";
-        internal const string LimitRobotL0IntensityMultiplierValue = "Sex Robot (L0) Length Limiter (Optional)";
-        internal const string LimitRobotL0IntensityMultiplierValue_Tooltip = "Sex Robot (L0) Length multiplier enabling the reduction of the L0 movement.";
-        internal const string LimitRobotL0SpeedMultiplierValue = "Sex Robot (L0) Speed Limiter (Optional)";
-        internal const string LimitRobotL0SpeedMultiplierValue_Tooltip = "Sex Robot (L0) Speed multiplier to limit the speed for animations where the tracking leads to too fast movement.";
-
-        // Keyboard shortcuts
-        internal const string SexRobotKeyboardShortcutsSection = "Keyboard shortcuts";
-        internal const string ToggleSerialPortConnectionKey = "Connect/Disconnect Sex Robot";
-        internal const string ToggleStrokeLengthLimiterKey = "Stroke: Enable/Disable L0 Limiter";
-        internal const string IncreaseStrokeLengthMultiplierKey = "Stroke Length: Increase multiplier";
-        internal const string DecreaseStrokeLengthMultiplierKey = "Stroke Length: Decrease multiplier";
-        internal const string IncreaseStrokeSpeedMultiplierKey = "Stroke Speed: Increase multiplier";
-        internal const string DecreaseStrokeSpeedMultiplierKey = "Stroke Speed: Decrease multiplier";
 
         /** Buttons **/
         // connect robot

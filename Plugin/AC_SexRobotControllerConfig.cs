@@ -11,10 +11,8 @@ namespace AC_SexRobotController.Plugin
 {
     internal partial class AC_SexRobotControllerPlugin : BasePlugin
     {
-        // WIP: Add option to disable the Plugin
-        internal static ConfigEntry<string> DisablePlugin { get; set; }
-        // WIP: Add option to disable showing the Multiplier buttons in the Settings Menu
-        internal static ConfigEntry<string> HideMultiplierButtonsInSettings { get; set; }
+        internal static ConfigEntry<bool> DisablePlugin { get; set; }
+        internal static ConfigEntry<bool> HideMultiplierButtonsInSettings { get; set; }
         internal static ConfigEntry<string> SerialPortConfig { get; set; }
         internal static ConfigEntry<string> SerialPortStatus { get; set; }
         internal static ConfigEntry<bool> SerialPortConnected { get; set; }
@@ -34,6 +32,7 @@ namespace AC_SexRobotController.Plugin
         internal static ConfigEntry<float> RobotL0MultiplierStepValue { get; set; }
         internal static ConfigEntry<float> LimitRobotL0LengthMultiplier { get; set; }
         internal static ConfigEntry<float> LimitRobotL0SpeedMultiplier { get; set; }
+        internal static ConfigEntry<float> RobotOrgasmSpeedMultiplier { get; set; }
         internal static ConfigEntry<float> RobotL0Min { get; set; }
         internal static ConfigEntry<float> RobotL0Max { get; set; }
         internal static ConfigEntry<float> RobotL1Min { get; set; }
@@ -77,10 +76,8 @@ namespace AC_SexRobotController.Plugin
             _serialPortConnection = SerialPortConnection.GetInstance();
             // Creates a config file in BepInEx/config named AC_SexRobotControllerPlugin.cfg
             // GENERAL
-            // WIP: Disable Plugin
-            //DisablePlugin = Config.Bind(StringConstants.SexRobotGeneralSection, StringConstants.DisablePlugin, false, new ConfigDescription(StringConstants.DisablePlugin_Tooltip));
-            // WIP: Disable Multiplier Buttons in Settings menu
-            //HideMultiplierButtonsInSettings = Config.Bind(StringConstants.SexRobotGeneralSection, StringConstants.HideSettingsMultiplierButtons, false, new ConfigDescription(StringConstants.HideSettingsMultiplierButtons_Tooltip));
+            DisablePlugin = Config.Bind(StringConstants.SexRobotGeneralSection, StringConstants.DisablePlugin, false, new ConfigDescription(StringConstants.DisablePlugin_Tooltip));
+            HideMultiplierButtonsInSettings = Config.Bind(StringConstants.SexRobotGeneralSection, StringConstants.HideSettingsMultiplierButtons, false, new ConfigDescription(StringConstants.HideSettingsMultiplierButtons_Tooltip));
             DiagnosticsConfig = Config.Bind(StringConstants.SexRobotGeneralSection, StringConstants.BepinExDebugOutput, false);
             //ReadAnimationsFromFile = Config.Bind(StringConstants.SexRobotGeneralSection, StringConstants.ReadAnimationsFromFile, false, new ConfigDescription(StringConstants.ReadAnimationsFromFile_Tooltip));
             WriteAnimationsToFile = Config.Bind(StringConstants.SexRobotGeneralSection, StringConstants.WriteNotFoundPositionsToFile, false, new ConfigDescription(StringConstants.WriteNotFoundPositionsToFile_Tooltip));
@@ -112,6 +109,7 @@ namespace AC_SexRobotController.Plugin
             RobotL0SpeedMultiplier = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.RobotL0SpeedMultiplier, RobotMovement.L0_DEFAULT_MAXSPEED,
                 new ConfigDescription(StringConstants.RobotL0AmplifierMultiplier_Tooltip, new AcceptableValueRange<float>(RobotMovement.L0_MAXSPEED_MIN, RobotMovement.L0_MAXSPEED_MAX)));
             RobotL0MultiplierStepValue = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.RobotL0MultiplierStepValue, 0.25f, new ConfigDescription(StringConstants.RobotL0MultiplierStepValue_Tooltip, new AcceptableValueRange<float>(0.01f, 1.0f)));
+            RobotOrgasmSpeedMultiplier = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.RobotOrgasmSpeedMultiplier, 0.25f, new ConfigDescription(StringConstants.RobotOrgasmSpeedMultiplier_Tooltip, new AcceptableValueRange<float>(0.0f, 1.0f)));
 
             // L0 LIMITER (OPTIONAL)
             LimitRobotL0Multipliers = Config.Bind(StringConstants.SexRobotLimiterSection, StringConstants.StrokeLengthLimiter, false, new ConfigDescription(StringConstants.StrokeLengthLimiter_Tooltip));
@@ -195,61 +193,64 @@ namespace AC_SexRobotController.Plugin
                     }
                 }));
 
-                // Create robot stroke length multiplier increase button
-                buttonStrokeLengthMultiplierIncrease = Object.Instantiate(btnController, btnController.parent).transform;
-                buttonStrokeLengthMultiplierIncrease.name = StringConstants.ButtonIncreaseStrokeLength_Name;
-                buttonStrokeLengthMultiplierIncreaseText = buttonStrokeLengthMultiplierIncrease.GetComponentInChildren<TextMeshProUGUI>();
-                buttonStrokeLengthMultiplierIncreaseText.text = StringConstants.ButtonIncreaseStrokeLength_Text;
-                buttonStrokeLengthMultiplierIncreaseText.fontSize = 18;
-                newButton = buttonStrokeLengthMultiplierIncrease.GetComponentInChildren<Button>();
-                newButton.onClick.RemoveAllListeners();
-                newButton.interactable = true;
-                (newButton.onClick ??= new()).AddListener((UnityAction)new System.Action(() =>
+                if (!HideMultiplierButtonsInSettings.Value)
                 {
-                    btnStrokeLengthMultiplierIncreaseClicked = true;
-                }));
+                    // Create robot stroke length multiplier increase button
+                    buttonStrokeLengthMultiplierIncrease = Object.Instantiate(btnController, btnController.parent).transform;
+                    buttonStrokeLengthMultiplierIncrease.name = StringConstants.ButtonIncreaseStrokeLength_Name;
+                    buttonStrokeLengthMultiplierIncreaseText = buttonStrokeLengthMultiplierIncrease.GetComponentInChildren<TextMeshProUGUI>();
+                    buttonStrokeLengthMultiplierIncreaseText.text = StringConstants.ButtonIncreaseStrokeLength_Text;
+                    buttonStrokeLengthMultiplierIncreaseText.fontSize = 18;
+                    newButton = buttonStrokeLengthMultiplierIncrease.GetComponentInChildren<Button>();
+                    newButton.onClick.RemoveAllListeners();
+                    newButton.interactable = true;
+                    (newButton.onClick ??= new()).AddListener((UnityAction)new System.Action(() =>
+                    {
+                        btnStrokeLengthMultiplierIncreaseClicked = true;
+                    }));
 
-                // Create robot stroke length multiplier decrease button 
-                buttonStrokeLengthMultiplierDecrease = Object.Instantiate(btnController, btnController.parent).transform;
-                buttonStrokeLengthMultiplierDecrease.name = StringConstants.ButtonDecreaseStrokeLength_Name;
-                buttonStrokeLengthMultiplierDecreaseText = buttonStrokeLengthMultiplierDecrease.GetComponentInChildren<TextMeshProUGUI>();
-                buttonStrokeLengthMultiplierDecreaseText.text = StringConstants.ButtonDecreaseStrokeLength_Text;
-                buttonStrokeLengthMultiplierDecreaseText.fontSize = 18;
-                newButton = buttonStrokeLengthMultiplierDecrease.GetComponentInChildren<Button>();
-                newButton.onClick.RemoveAllListeners();
-                newButton.interactable = true;
-                (newButton.onClick ??= new()).AddListener((UnityAction)new System.Action(() =>
-                {
-                    btnStrokLengthMultiplierDecreaseClicked = true;
-                }));
+                    // Create robot stroke length multiplier decrease button 
+                    buttonStrokeLengthMultiplierDecrease = Object.Instantiate(btnController, btnController.parent).transform;
+                    buttonStrokeLengthMultiplierDecrease.name = StringConstants.ButtonDecreaseStrokeLength_Name;
+                    buttonStrokeLengthMultiplierDecreaseText = buttonStrokeLengthMultiplierDecrease.GetComponentInChildren<TextMeshProUGUI>();
+                    buttonStrokeLengthMultiplierDecreaseText.text = StringConstants.ButtonDecreaseStrokeLength_Text;
+                    buttonStrokeLengthMultiplierDecreaseText.fontSize = 18;
+                    newButton = buttonStrokeLengthMultiplierDecrease.GetComponentInChildren<Button>();
+                    newButton.onClick.RemoveAllListeners();
+                    newButton.interactable = true;
+                    (newButton.onClick ??= new()).AddListener((UnityAction)new System.Action(() =>
+                    {
+                        btnStrokLengthMultiplierDecreaseClicked = true;
+                    }));
 
-                // Create robot stroke speed multiplier increase button
-                buttonStrokeSpeedMultiplierIncrease = Object.Instantiate(btnController, btnController.parent).transform;
-                buttonStrokeSpeedMultiplierIncrease.name = StringConstants.ButtonIncreaseStrokeSpeed_Name;
-                buttonStrokeSpeedMultiplierIncreaseText = buttonStrokeSpeedMultiplierIncrease.GetComponentInChildren<TextMeshProUGUI>();
-                buttonStrokeSpeedMultiplierIncreaseText.text = StringConstants.ButtonIncreaseStrokeSpeed_Text;
-                buttonStrokeSpeedMultiplierIncreaseText.fontSize = 18;
-                newButton = buttonStrokeSpeedMultiplierIncrease.GetComponentInChildren<Button>();
-                newButton.onClick.RemoveAllListeners();
-                newButton.interactable = true;
-                (newButton.onClick ??= new()).AddListener((UnityAction)new System.Action(() =>
-                {
-                    btnStrokeSpeedMultiplierIncreaseClicked = true;
-                }));
+                    // Create robot stroke speed multiplier increase button
+                    buttonStrokeSpeedMultiplierIncrease = Object.Instantiate(btnController, btnController.parent).transform;
+                    buttonStrokeSpeedMultiplierIncrease.name = StringConstants.ButtonIncreaseStrokeSpeed_Name;
+                    buttonStrokeSpeedMultiplierIncreaseText = buttonStrokeSpeedMultiplierIncrease.GetComponentInChildren<TextMeshProUGUI>();
+                    buttonStrokeSpeedMultiplierIncreaseText.text = StringConstants.ButtonIncreaseStrokeSpeed_Text;
+                    buttonStrokeSpeedMultiplierIncreaseText.fontSize = 18;
+                    newButton = buttonStrokeSpeedMultiplierIncrease.GetComponentInChildren<Button>();
+                    newButton.onClick.RemoveAllListeners();
+                    newButton.interactable = true;
+                    (newButton.onClick ??= new()).AddListener((UnityAction)new System.Action(() =>
+                    {
+                        btnStrokeSpeedMultiplierIncreaseClicked = true;
+                    }));
 
-                // Create robot stroke speed multiplier decrease button 
-                buttonStrokeSpeedMultiplierDecrease = Object.Instantiate(btnController, btnController.parent).transform;
-                buttonStrokeSpeedMultiplierDecrease.name = StringConstants.ButtonDecreaseStrokeSpeed_Name;
-                buttonStrokeSpeedMultiplierDecreaseText = buttonStrokeSpeedMultiplierDecrease.GetComponentInChildren<TextMeshProUGUI>();
-                buttonStrokeSpeedMultiplierDecreaseText.text = StringConstants.ButtonDecreaseStrokeSpeed_Text;
-                buttonStrokeSpeedMultiplierDecreaseText.fontSize = 18;
-                newButton = buttonStrokeSpeedMultiplierDecrease.GetComponentInChildren<Button>();
-                newButton.onClick.RemoveAllListeners();
-                newButton.interactable = true;
-                (newButton.onClick ??= new()).AddListener((UnityAction)new System.Action(() =>
-                {
-                    btnStrokeSpeedMultiplierDecreaseClicked = true;
-                }));
+                    // Create robot stroke speed multiplier decrease button 
+                    buttonStrokeSpeedMultiplierDecrease = Object.Instantiate(btnController, btnController.parent).transform;
+                    buttonStrokeSpeedMultiplierDecrease.name = StringConstants.ButtonDecreaseStrokeSpeed_Name;
+                    buttonStrokeSpeedMultiplierDecreaseText = buttonStrokeSpeedMultiplierDecrease.GetComponentInChildren<TextMeshProUGUI>();
+                    buttonStrokeSpeedMultiplierDecreaseText.text = StringConstants.ButtonDecreaseStrokeSpeed_Text;
+                    buttonStrokeSpeedMultiplierDecreaseText.fontSize = 18;
+                    newButton = buttonStrokeSpeedMultiplierDecrease.GetComponentInChildren<Button>();
+                    newButton.onClick.RemoveAllListeners();
+                    newButton.interactable = true;
+                    (newButton.onClick ??= new()).AddListener((UnityAction)new System.Action(() =>
+                    {
+                        btnStrokeSpeedMultiplierDecreaseClicked = true;
+                    }));
+                }
 
                 // Create button for switching L0 multipliers (dynamic switching between softer and intenser animations)
                 buttonLimitStrokeMultipliers = Object.Instantiate(btnConnect, btnConnect.parent).transform;

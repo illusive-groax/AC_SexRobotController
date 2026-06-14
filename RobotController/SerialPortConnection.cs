@@ -24,7 +24,7 @@ namespace AC_SexRobotController.RobotController
         internal void UpdateSerialPort()
         {
             AC_SexRobotControllerPlugin.SerialPortConnected.Value = false;
-            AC_SexRobotControllerPlugin.LogInfo("Serial COM port changed to: " + AC_SexRobotControllerPlugin.SerialPortConfig.Value);
+            AC_SexRobotControllerPlugin.LogInfo($"Serial COM port changed to: {AC_SexRobotControllerPlugin.SerialPortConfig.Value}.");
 
             if (AC_SerialPort != null)
             {
@@ -34,7 +34,7 @@ namespace AC_SexRobotController.RobotController
                     {
                         // Close the serial port connection
                         AC_SerialPort.Close();
-                        AC_SexRobotControllerPlugin.LogInfo("Serial port " + AC_SerialPort.PortName + " has been disconnected.");
+                        AC_SexRobotControllerPlugin.LogInfo($"Serial port {AC_SerialPort.PortName} has been disconnected.");
                     }
                     catch (Exception ex)
                     {
@@ -57,13 +57,13 @@ namespace AC_SexRobotController.RobotController
                         // Close the serial port connection
                         AC_SerialPort.Close();
                         AC_SexRobotControllerPlugin.SerialPortStatus.Value = AC_SerialPort.PortName + " port is disconnected.";
-                        AC_SexRobotControllerPlugin.LogInfo("Serial port " + AC_SerialPort.PortName + " has been disconnected.");
+                        AC_SexRobotControllerPlugin.LogInfo($"Serial port {AC_SerialPort.PortName} has been disconnected.");
                         _ = UpdateDisconnectRobotButton();
                     }
                     catch (Exception ex)
                     {
                         AC_SexRobotControllerPlugin.SerialPortStatus.Value = AC_SerialPort.PortName + " port is disconnected.";
-                        AC_SexRobotControllerPlugin.LogInfo("Serial port " + AC_SerialPort.PortName + " has been disconnected.");
+                        AC_SexRobotControllerPlugin.LogInfo($"Serial port {AC_SerialPort.PortName} has been disconnected.");
                         AC_SexRobotControllerPlugin.LogDebug("Error: " + ex.ToString());
                         _ = UpdateDisconnectRobotButton();
                     }
@@ -86,13 +86,13 @@ namespace AC_SexRobotController.RobotController
 
                         AC_SexRobotControllerPlugin.SerialPortConnected.Value = true;
                         AC_SexRobotControllerPlugin.SerialPortStatus.Value = "Connected to serial port " + AC_SexRobotControllerPlugin.SerialPortConfig.Value + ".";
-                        AC_SexRobotControllerPlugin.LogInfo("Connected to serial port " + AC_SerialPort.PortName + ".");
+                        AC_SexRobotControllerPlugin.LogInfo($"Connected to serial port {AC_SerialPort.PortName}.");
                     }
                     else
                     {
                         AC_SexRobotControllerPlugin.SerialPortConnected.Value = false;
                         AC_SexRobotControllerPlugin.SerialPortStatus.Value = "Error connecting to serial port " + AC_SexRobotControllerPlugin.SerialPortConfig.Value + ".";
-                        AC_SexRobotControllerPlugin.LogInfo("Error connecting to serial port " + AC_SerialPort.PortName + ".");
+                        AC_SexRobotControllerPlugin.LogInfo($"Error connecting to serial port {AC_SerialPort.PortName}.");
                     }
                     _ = UpdateConnectRobotButton();
                 }
@@ -104,112 +104,6 @@ namespace AC_SexRobotController.RobotController
                     _ = UpdateConnectRobotButton();
                 }
             }
-        }
-
-        internal async Task UpdateConnectRobotButton()
-        {
-            await Task.Run(async () =>
-            {
-                if (AC_SerialPort.IsOpen)
-                {
-                    AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonConnectRobot_Connected;
-                }
-                else
-                {
-                    AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonConnectRobot_NotConnected;
-                }
-                await Task.Delay(1000);
-                AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonConnectRobot_Text;
-                AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonDisconnectRobot_Text;
-            });
-        }
-
-        internal async Task UpdateDisconnectRobotButton()
-        {
-            await Task.Run(async () =>
-            {
-                if (!AC_SerialPort.IsOpen)
-                {
-                    AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonDisconnectRobot_Disconnected;
-                }
-                else
-                {
-                    AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonDisconnectRobot_NotDisconnected;
-                }
-                await Task.Delay(1000);
-                AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonConnectRobot_Text;
-            });
-        }
-
-        internal static async Task UpdateLimitStrokeButton()
-        {
-            await Task.Run(async () =>
-            {
-                if (!AC_SexRobotControllerPlugin.LimitRobotL0Multipliers.Value)
-                {
-                    AC_SexRobotControllerPlugin.LimitRobotL0Multipliers.Value = true;
-                    AC_SexRobotControllerPlugin.buttonLimitStrokeMultipliersText.text = StringConstants.ButtonLimitStrokeMultiplier_Enabled;
-                }
-                else
-                {
-                    AC_SexRobotControllerPlugin.LimitRobotL0Multipliers.Value = false;
-                    AC_SexRobotControllerPlugin.buttonLimitStrokeMultipliersText.text = StringConstants.ButtonLimitStrokeMultiplier_Disabled;
-                }
-                await Task.Delay(1000);
-                AC_SexRobotControllerPlugin.buttonLimitStrokeMultipliersText.text = StringConstants.ButtonLimitStrokeMultiplier_Text;
-            });
-        }
-
-        internal static async Task UpdateStrokeLengthMultiplierIncreaseButton()
-        {
-            await Task.Run(async () =>
-            {
-                float newValue = AC_SexRobotControllerPlugin.LimitRobotL0Multipliers.Value
-                    ? AC_SexRobotControllerPlugin.LimitRobotL0LengthMultiplier.Value
-                    : AC_SexRobotControllerPlugin.RobotL0LengthMultiplier.Value;
-                AC_SexRobotControllerPlugin.buttonStrokeLengthMultiplierIncreaseText.text = newValue.ToString();
-                await Task.Delay(1000);
-                AC_SexRobotControllerPlugin.buttonStrokeLengthMultiplierIncreaseText.text = StringConstants.ButtonIncreaseStrokeLength_Text;
-            });
-        }
-
-        internal static async Task UpdateStrokeLengthMultiplierDecreaseButton()
-        {
-            await Task.Run(async () =>
-            {
-                float newValue = AC_SexRobotControllerPlugin.LimitRobotL0Multipliers.Value
-                    ? AC_SexRobotControllerPlugin.LimitRobotL0LengthMultiplier.Value
-                    : AC_SexRobotControllerPlugin.RobotL0LengthMultiplier.Value;
-                AC_SexRobotControllerPlugin.buttonStrokeLengthMultiplierDecreaseText.text = newValue.ToString();
-                await Task.Delay(1000);
-                AC_SexRobotControllerPlugin.buttonStrokeLengthMultiplierDecreaseText.text = StringConstants.ButtonDecreaseStrokeLength_Text;
-            });
-        }
-
-        internal static async Task UpdateStrokeSpeedMultiplierIncreaseButton()
-        {
-            await Task.Run(async () =>
-            {
-                float newValue = AC_SexRobotControllerPlugin.LimitRobotL0Multipliers.Value
-                    ? AC_SexRobotControllerPlugin.LimitRobotL0SpeedMultiplier.Value
-                    : AC_SexRobotControllerPlugin.RobotL0SpeedMultiplier.Value;
-                AC_SexRobotControllerPlugin.buttonStrokeSpeedMultiplierIncreaseText.text = newValue.ToString();
-                await Task.Delay(1000);
-                AC_SexRobotControllerPlugin.buttonStrokeSpeedMultiplierIncreaseText.text = StringConstants.ButtonIncreaseStrokeSpeed_Text;
-            });
-        }
-
-        internal static async Task UpdateStrokeSpeedMultiplierDecreaseButton()
-        {
-            await Task.Run(async () =>
-            {
-                float newValue = AC_SexRobotControllerPlugin.LimitRobotL0Multipliers.Value
-                    ? AC_SexRobotControllerPlugin.LimitRobotL0SpeedMultiplier.Value
-                    : AC_SexRobotControllerPlugin.RobotL0SpeedMultiplier.Value;
-                AC_SexRobotControllerPlugin.buttonStrokeSpeedMultiplierDecreaseText.text = newValue.ToString();
-                await Task.Delay(1000);
-                AC_SexRobotControllerPlugin.buttonStrokeSpeedMultiplierDecreaseText.text = StringConstants.ButtonDecreaseStrokeSpeed_Text;
-            });
         }
 
         internal void CheckButtonAndSerialConnState()
@@ -231,7 +125,7 @@ namespace AC_SexRobotController.RobotController
                 _ = UpdateConnectRobotButton();
             }
 
-            // Check if connect robot button was clicked
+            // Check if disconnect robot button was clicked
             if (AC_SexRobotControllerPlugin.btnDisconnectRobotClicked)
             {
                 AC_SexRobotControllerPlugin.btnDisconnectRobotClicked = false;
@@ -324,13 +218,121 @@ namespace AC_SexRobotController.RobotController
             if (AC_SexRobotControllerPlugin.ToggleSerialPortConnection.Value.IsDown())
             {
                 AC_SexRobotControllerPlugin.SerialPortConnected.Value = !AC_SexRobotControllerPlugin.SerialPortConnected.Value;
+                // if the serial connection shortcut was clicked, enable the plugin if disabled
+                if (AC_SexRobotControllerPlugin.DisablePlugin.Value)
+                    AC_SexRobotControllerPlugin.DisablePlugin.Value = false;
             }
         }
 
-        private void IncreaseStrokeLength()
+        private async Task UpdateConnectRobotButton()
         {
-            float newValue = 1.0f;
+            await Task.Run(async () =>
+            {
+                if (AC_SerialPort.IsOpen)
+                {
+                    AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonConnectRobot_Connected;
+                }
+                else
+                {
+                    AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonConnectRobot_NotConnected;
+                }
+                await Task.Delay(1000);
+                AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonConnectRobot_Text;
+                AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonDisconnectRobot_Text;
+            });
+        }
 
+        private async Task UpdateDisconnectRobotButton()
+        {
+            await Task.Run(async () =>
+            {
+                if (!AC_SerialPort.IsOpen)
+                {
+                    AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonDisconnectRobot_Disconnected;
+                }
+                else
+                {
+                    AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonDisconnectRobot_NotDisconnected;
+                }
+                await Task.Delay(1000);
+                AC_SexRobotControllerPlugin.buttonConnectRobotText.text = StringConstants.ButtonConnectRobot_Text;
+            });
+        }
+
+        private static async Task UpdateLimitStrokeButton()
+        {
+            await Task.Run(async () =>
+            {
+                if (!AC_SexRobotControllerPlugin.LimitRobotL0Multipliers.Value)
+                {
+                    AC_SexRobotControllerPlugin.LimitRobotL0Multipliers.Value = true;
+                    AC_SexRobotControllerPlugin.buttonLimitStrokeMultipliersText.text = StringConstants.ButtonLimitStrokeMultiplier_Enabled;
+                }
+                else
+                {
+                    AC_SexRobotControllerPlugin.LimitRobotL0Multipliers.Value = false;
+                    AC_SexRobotControllerPlugin.buttonLimitStrokeMultipliersText.text = StringConstants.ButtonLimitStrokeMultiplier_Disabled;
+                }
+                await Task.Delay(1000);
+                AC_SexRobotControllerPlugin.buttonLimitStrokeMultipliersText.text = StringConstants.ButtonLimitStrokeMultiplier_Text;
+            });
+        }
+
+        private static async Task UpdateStrokeLengthMultiplierIncreaseButton()
+        {
+            await Task.Run(async () =>
+            {
+                float newValue = AC_SexRobotControllerPlugin.LimitRobotL0Multipliers.Value
+                    ? AC_SexRobotControllerPlugin.LimitRobotL0LengthMultiplier.Value
+                    : AC_SexRobotControllerPlugin.RobotL0LengthMultiplier.Value;
+                AC_SexRobotControllerPlugin.buttonStrokeLengthMultiplierIncreaseText.text = newValue.ToString();
+                await Task.Delay(1000);
+                AC_SexRobotControllerPlugin.buttonStrokeLengthMultiplierIncreaseText.text = StringConstants.ButtonIncreaseStrokeLength_Text;
+            });
+        }
+
+        private static async Task UpdateStrokeLengthMultiplierDecreaseButton()
+        {
+            await Task.Run(async () =>
+            {
+                float newValue = AC_SexRobotControllerPlugin.LimitRobotL0Multipliers.Value
+                    ? AC_SexRobotControllerPlugin.LimitRobotL0LengthMultiplier.Value
+                    : AC_SexRobotControllerPlugin.RobotL0LengthMultiplier.Value;
+                AC_SexRobotControllerPlugin.buttonStrokeLengthMultiplierDecreaseText.text = newValue.ToString();
+                await Task.Delay(1000);
+                AC_SexRobotControllerPlugin.buttonStrokeLengthMultiplierDecreaseText.text = StringConstants.ButtonDecreaseStrokeLength_Text;
+            });
+        }
+
+        private static async Task UpdateStrokeSpeedMultiplierIncreaseButton()
+        {
+            await Task.Run(async () =>
+            {
+                float newValue = AC_SexRobotControllerPlugin.LimitRobotL0Multipliers.Value
+                    ? AC_SexRobotControllerPlugin.LimitRobotL0SpeedMultiplier.Value
+                    : AC_SexRobotControllerPlugin.RobotL0SpeedMultiplier.Value;
+                AC_SexRobotControllerPlugin.buttonStrokeSpeedMultiplierIncreaseText.text = newValue.ToString();
+                await Task.Delay(1000);
+                AC_SexRobotControllerPlugin.buttonStrokeSpeedMultiplierIncreaseText.text = StringConstants.ButtonIncreaseStrokeSpeed_Text;
+            });
+        }
+
+        private static async Task UpdateStrokeSpeedMultiplierDecreaseButton()
+        {
+            await Task.Run(async () =>
+            {
+                float newValue = AC_SexRobotControllerPlugin.LimitRobotL0Multipliers.Value
+                    ? AC_SexRobotControllerPlugin.LimitRobotL0SpeedMultiplier.Value
+                    : AC_SexRobotControllerPlugin.RobotL0SpeedMultiplier.Value;
+                AC_SexRobotControllerPlugin.buttonStrokeSpeedMultiplierDecreaseText.text = newValue.ToString();
+                await Task.Delay(1000);
+                AC_SexRobotControllerPlugin.buttonStrokeSpeedMultiplierDecreaseText.text = StringConstants.ButtonDecreaseStrokeSpeed_Text;
+            });
+        }
+
+        private static void IncreaseStrokeLength()
+        {
+            float newValue;
             if (AC_SexRobotControllerPlugin.LimitRobotL0Multipliers.Value)
             {
                 AC_SexRobotControllerPlugin.LimitRobotL0LengthMultiplier.Value += AC_SexRobotControllerPlugin.RobotL0MultiplierStepValue.Value;
@@ -347,10 +349,9 @@ namespace AC_SexRobotController.RobotController
             AC_SexRobotControllerPlugin.LogInfo(StringConstants.Status_CurrentStrokeMultiplierValue + newValue);
         }
 
-        private void DecreaseStrokeLength()
+        private static void DecreaseStrokeLength()
         {
-            float newValue = 1.0f;
-
+            float newValue;
             if (AC_SexRobotControllerPlugin.LimitRobotL0Multipliers.Value)
             {
                 AC_SexRobotControllerPlugin.LimitRobotL0LengthMultiplier.Value -= AC_SexRobotControllerPlugin.RobotL0MultiplierStepValue.Value;
@@ -367,10 +368,9 @@ namespace AC_SexRobotController.RobotController
             AC_SexRobotControllerPlugin.LogInfo(StringConstants.Status_CurrentStrokeMultiplierValue + newValue);
         }
 
-        private void IncreaseStrokeSpeed()
+        private static void IncreaseStrokeSpeed()
         {
-            float newValue = 1.0f;
-
+            float newValue;
             if (AC_SexRobotControllerPlugin.LimitRobotL0Multipliers.Value)
             {
                 AC_SexRobotControllerPlugin.LimitRobotL0SpeedMultiplier.Value += AC_SexRobotControllerPlugin.RobotL0MultiplierStepValue.Value;
@@ -387,10 +387,9 @@ namespace AC_SexRobotController.RobotController
             AC_SexRobotControllerPlugin.LogInfo(StringConstants.Status_CurrentStrokeMultiplierValue + newValue);
         }
 
-        private void DecreaseStrokeSpeed()
+        private static void DecreaseStrokeSpeed()
         {
-            float newValue = 1.0f;
-
+            float newValue;
             if (AC_SexRobotControllerPlugin.LimitRobotL0Multipliers.Value)
             {
                 AC_SexRobotControllerPlugin.LimitRobotL0SpeedMultiplier.Value -= AC_SexRobotControllerPlugin.RobotL0MultiplierStepValue.Value;

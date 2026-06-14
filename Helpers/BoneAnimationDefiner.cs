@@ -180,14 +180,15 @@ namespace AC_SexRobotController.Helpers
             {"嫌がり手コキ", FemaleTargetType.LEFTHAND}, // Handjob
             {"手コキ", FemaleTargetType.LEFTHAND}, //Handjob
             {"無理矢理手コキ", FemaleTargetType.RIGHTHAND}, //Forced Handjob
-            //{"亀頭弄り", FemaleTargetType.RIGHTHAND}, //Glans play
-            //{"立ち手コキ", FemaleTargetType.RIGHTHAND}, //Standing handjob
+            {"亀頭弄り", FemaleTargetType.RIGHTHAND}, //Glans play
+            {"立ち手コキ", FemaleTargetType.RIGHTHAND}, //Standing handjob
             {"横向き手コキ", FemaleTargetType.RIGHTHAND}, //Side-facing handjob
             {"椅子手コキ", FemaleTargetType.RIGHTHAND}, //Chair handjob
             {"背面手コキ", FemaleTargetType.RIGHTHAND}, //Reverse handjob
             {"開脚手コキ", FemaleTargetType.LEFTHAND}, //Spread-leg handjob
             {"逆さ手コキ", FemaleTargetType.RIGHTHAND}, //Reverse handjob
             {"脱力手コキ", FemaleTargetType.RIGHTHAND}, //weak handjob
+            {"椅子並列手コキ", FemaleTargetType.RIGHTHAND}, //side-by-side handjob on chair (end: righthand)
 
             //blowjob
             //{"ORAL", FemaleTargetType.ORAL},
@@ -285,6 +286,7 @@ namespace AC_SexRobotController.Helpers
             {"触手正常位", FemaleTargetType.VAGINAL}, //Tentacle missionary
             {"壁Y字バランス挿入", FemaleTargetType.VAGINAL}, //Wall Y-balanced insertion
             {"またがり対面座位", FemaleTargetType.VAGINAL}, //Straddle Face-to-Face
+            {"カウンター対面立位", FemaleTargetType.VAGINAL}, //standing against counter
 
             //anal
             //{"ANAL", FemaleTargetType.ANAL},
@@ -309,11 +311,11 @@ namespace AC_SexRobotController.Helpers
             {"手コキ素股", FemaleTargetType.INTERCRURAL_HIP}, //Handjob intercrural
             {"椅子素股", FemaleTargetType.INTERCRURAL_HIP}, //Chair intercrural
             {"椅子対面座位", FemaleTargetType.VAGINAL}, //Chair Face-to-Face Sitting
+            {"椅子側位", FemaleTargetType.VAGINAL}, //Chair side position
 
             //intercrucial
             //{"INTERCRURAL_HIP", FemaleTargetType.INTERCRURAL_HIP},
             {"立ち素股", FemaleTargetType.INTERCRURAL_HIP}, //Standing intercrural
-
 
             //footjob
             //{"FOOTJOB", FemaleTargetType.LEFTFOOT},
@@ -326,19 +328,16 @@ namespace AC_SexRobotController.Helpers
             {"バスタブ足コキ", FemaleTargetType.LEFTFOOT}, //Bathtub footjob
 
 
-            // 3P - none of these currently implemented
             // 3P - 2 girls, 1 guy - HJ
             //{"GIRL1", FemaleTargetType.LEFTHAND},
             //{"GIRL2", FemaleTargetType.LEFTHANDSWAP},
-            //footjob & HJ
-            {"手コキ舐めA", FemaleTargetType.LEFTHAND}, //Double handjob + Licking A
-            {"手コキ舐めB", FemaleTargetType.LEFTHANDSWAP}, //Double handjob + Licking B
+            {"W手コキ舐めA", FemaleTargetType.RIGHTHANDSWAP}, //Double handjob + Licking A (End: Tongue from both)
+            {"W手コキ舐めB", FemaleTargetType.LEFTHANDSWAP}, //Double handjob + Licking B  (End: Tongue from both)
 
 
             // 3P - 2 girls, 1 guy - BJ
             //{"GIRL1", FemaleTargetType.ORAL},
             //{"GIRL2", FemaleTargetType.ORALSWAP},
-            //double fellatio
             {"フェラA", FemaleTargetType.ORAL}, //Double blowjob A
             {"フェラB", FemaleTargetType.ORALSWAP}, // Double blowjob A
 
@@ -359,21 +358,13 @@ namespace AC_SexRobotController.Helpers
             // 3P - 2 girls, 1 guy - Insert
             //{"GIRL1", FemaleTargetType.VAGINAL},
             //{"GIRL2", FemaleTargetType.VAGINALSWAP},
-            //cowgirl & cunnilingus
-            {"騎乗位A", FemaleTargetType.VAGINAL}, //Double cowgirl A
-            {"騎乗位B", FemaleTargetType.VAGINALSWAP}, //Double cowgirl B
+            {"W騎乗位A", FemaleTargetType.VAGINAL}, //Double cowgirl A
+            {"W騎乗位B", FemaleTargetType.VAGINALSWAP}, //Double cowgirl B
             {"机バッククンニA", FemaleTargetType.VAGINAL}, //Desk doggy cunnilingus A
             {"机バッククンニB", FemaleTargetType.VAGINALSWAP}, //Desk doggy cunnilingus B
-
-            //doggy & fingering
             {"後背位＋手マンA", FemaleTargetType.VAGINAL}, //Doggy + fingering A
             {"後背位＋手マンB", FemaleTargetType.VAGINALSWAP}, //Doggy + fingering B
 
-            //missionary & fingering
-
-            //reverse cowgirl & fingering
-
-            //reverse sitting & cunnilingus
 
             //3P - 1 girl, 2 guys
             {"W駅弁", FemaleTargetType.VAGINAL}, // W sandwich
