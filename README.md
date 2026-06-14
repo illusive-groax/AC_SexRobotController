@@ -1,19 +1,18 @@
 # AC_SexRobotController
-## Aicomi Sex Robot Controller Plugin v1.0
 
-> [!Warning]
-> This Plugin is currently in development and therefore the text below represents the to-be and not as-is state of the Plugin.
-> For more details, see *Planned features* and the latest *Release notes* for more info.
-> This is currently a Pre-Release, due to the lack of proper movement reflection (in-game vs. actual SR6 movement).
-> It is **not** a stable release nor ready for daily usage.
-> Please do a test-run with the chosen multipliers to see how the SR6 behaves, as with higher multiplier values the movement is unpredictable upon speed increase.
+## Disclosure
+The baseline for the development was the code for the Sex Robot Controller from hs2robotics (https://github.com/hs2robotics/HS2_SexRobotController).
 
+Due to the issues with the animations and objects not properly colliding/collapsing on itself in Aicomi, AI assistance (ChatGTP) was used to update the original code from v1.0/v1.1.
+Only the code relating to updating the robot position (`RobotMovement:UpdateRobotPosition()`) based on the position of the characters in terms of the animation playing is AI-generated.
+The relevant code sections are maked with `#region AI_GENERATED_VARIABLES` and `#region AI_GENERATED` in the file `RobotMovement.cs`.
+
+## Aicomi Sex Robot Controller Plugin
+This Plugin is still in development, for more info, see the discussion on EroScripts: https://discuss.eroscripts.com/t/illgames-aicomi-sr6-bepinex-plugin-wip/317325
 
 **Main configuration menu accessed by hitting F1 and then clicking the Plugin settings button**
+![plugin](Screenshots/bepinEx_menu.png)
 
-<!--
-![plugin](screenshots/bepinEx_menu.png)
--->
 
 This plugin outputs the positional data from a total of 100 (currently) of the 'HScenes' (sex scenes) in Aicomi with full 6 degrees of freedom (6DOF) in a simple text format known as T-Code (Toy-Code) which is then sent over a serial link (COM port) to drive an open source sex robot (OSR2, OSR2+, SR6, etc).
 
@@ -32,20 +31,21 @@ The T-Code format and open source sex robots (OSR2, OSR2+, SR6) were all created
 
 **Quick access buttons to connect / disconnect your sex robot and to increase / decrease the stroke multiplier**
 
-![plugin](screenshots/ac_MenuButtons.png)
+![plugin](Screenshots/ac_MenuButtons.png)
 
 **Pressing the hotkeys or the quick access buttons to connect / disconnect your sex robot and to increase / decrease the stroke multiplier show feedback text when pressed**
 
-![plugin](screenshots/ac_stateChange.png)
+![plugin](Screenshots/ac_stateChange.png)
 
 **Separate button (the second "Settings" icon) for enabling or disabling the speed limiter.**
-![plugin](screenshots/ac_Scene_limitButton.png)
+![plugin](Screenshots/ac_Scene_limitButton.png)
 
 **Writing animations to file**
 This is an option which writes the name of the current animation to file to make it easier to add missing animations.
 Note: The animation name doesn't contain any position info and is not written to the file which is read.
 The animation(s) needs to be added the the file `SexRobotController.txt`.
 
+<!--
 **Adding animations/positions to file**
 When enabling the option to read from file, a file which contains the known animations/positions will be created (`SexRobotController.txt`).
 The file is only created if it doesn't exists to serve as a template, you can delete everything in the file if you want to.
@@ -102,10 +102,10 @@ Here is an example of how an error could look like, if an invalid value was adde
   at HS2_SexRobotController.CheckButtonAndSerialConnState () [0x0001a] in <ca2677a8d684461c82753f125094d4f9>:0
 ```
 The error can be found in the BepInEx Log (found in `<GameDir>\BepInEx`) for errors.
-
+-->
 
 ## Planned Features
 - VR Support
 - 3P
 - 5P
-- Improving the movement calculations (currently none of the animations does a full movement cycle when compared to the plugin I developed for HS2 and KKS).
+

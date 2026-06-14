@@ -11,22 +11,29 @@ namespace AC_SexRobotController.Plugin
 {
     internal partial class AC_SexRobotControllerPlugin : BasePlugin
     {
+        // WIP: Add option to disable the Plugin
+        internal static ConfigEntry<string> DisablePlugin { get; set; }
+        // WIP: Add option to disable showing the Multiplier buttons in the Settings Menu
+        internal static ConfigEntry<string> HideMultiplierButtonsInSettings { get; set; }
         internal static ConfigEntry<string> SerialPortConfig { get; set; }
-        internal static ConfigEntry<bool> SerialPortConnected { get; set; }
         internal static ConfigEntry<string> SerialPortStatus { get; set; }
+        internal static ConfigEntry<bool> SerialPortConnected { get; set; }
         internal static ConfigEntry<KeyboardShortcut> ToggleSerialPortConnection { get; set; }
         internal static ConfigEntry<KeyboardShortcut> StrokeLengthMultiplierIncrease { get; set; }
         internal static ConfigEntry<KeyboardShortcut> StrokeLengthMultiplierDecrease { get; set; }
+        internal static ConfigEntry<KeyboardShortcut> StrokeSpeedMultiplierIncrease { get; set; }
+        internal static ConfigEntry<KeyboardShortcut> StrokeSpeedMultiplierDecrease { get; set; }
         internal static ConfigEntry<KeyboardShortcut> TogglelimitRobotStrokeLength { get; set; }
-
         internal static ConfigEntry<float> SexRobotUpdateFrequencyConfig { get; set; }
         internal static ConfigEntry<bool> DiagnosticsConfig { get; set; }
         internal static ConfigEntry<bool> ReadAnimationsFromFile { get; set; }
         internal static ConfigEntry<bool> WriteAnimationsToFile { get; set; }
-        internal static ConfigEntry<bool> LimitRobotL0Length { get; set; }
-        internal static ConfigEntry<float> LimitRobotL0Multiplier { get; set; }
-        internal static ConfigEntry<float> RobotL0Multiplier { get; set; }
+        internal static ConfigEntry<bool> LimitRobotL0Multipliers { get; set; }
+        internal static ConfigEntry<float> RobotL0LengthMultiplier { get; set; }
+        internal static ConfigEntry<float> RobotL0SpeedMultiplier { get; set; }
         internal static ConfigEntry<float> RobotL0MultiplierStepValue { get; set; }
+        internal static ConfigEntry<float> LimitRobotL0LengthMultiplier { get; set; }
+        internal static ConfigEntry<float> LimitRobotL0SpeedMultiplier { get; set; }
         internal static ConfigEntry<float> RobotL0Min { get; set; }
         internal static ConfigEntry<float> RobotL0Max { get; set; }
         internal static ConfigEntry<float> RobotL1Min { get; set; }
@@ -41,68 +48,91 @@ namespace AC_SexRobotController.Plugin
         internal static ConfigEntry<float> RobotR2Max { get; set; }
 
         internal static TextMeshProUGUI buttonConnectRobotText;
-        internal static TextMeshProUGUI buttonDisconnectRobotText;
-        internal static TextMeshProUGUI buttonStrokeMultiplierIncreaseText;
-        internal static TextMeshProUGUI buttonStrokeMultiplierDecreaseText;
-        internal static TextMeshProUGUI buttonLimitRobotStrokeLengthText;
-        internal static bool fileIsRead = false;
-        internal static bool buttonConnectRobotClicked = false;
-        internal static bool buttonDisconnectRobotClicked = false;
-        internal static bool buttonLimitRobotStrokeLengthClicked = false;
-        internal static bool buttonStrokeMultiplierIncreaseClicked = false;
-        internal static bool buttonStrokeMultiplierDecreaseClicked = false;
+        internal static TextMeshProUGUI buttonLimitStrokeMultipliersText;
+        internal static TextMeshProUGUI buttonStrokeLengthMultiplierIncreaseText;
+        internal static TextMeshProUGUI buttonStrokeLengthMultiplierDecreaseText;
+        internal static TextMeshProUGUI buttonStrokeSpeedMultiplierIncreaseText;
+        internal static TextMeshProUGUI buttonStrokeSpeedMultiplierDecreaseText;
 
         internal static Transform buttonConnectRobot;
-        internal static Transform buttonDisconnectRobot;
-        internal static Transform buttonStrokeMultiplierIncrease;
-        internal static Transform buttonStrokeMultiplierDecrease;
-        internal static Transform buttonLimitRobotStrokeLength;
+        internal static Transform buttonLimitStrokeMultipliers;
+        internal static Transform buttonStrokeLengthMultiplierIncrease;
+        internal static Transform buttonStrokeLengthMultiplierDecrease;
+        internal static Transform buttonStrokeSpeedMultiplierIncrease;
+        internal static Transform buttonStrokeSpeedMultiplierDecrease;
+
+        internal static bool fileIsRead = false;
+        internal static bool btnConnectRobotClicked = false;
+        internal static bool btnDisconnectRobotClicked = false;
+        internal static bool btnStrokeLengthMultiplierIncreaseClicked = false;
+        internal static bool btnStrokLengthMultiplierDecreaseClicked = false;
+        internal static bool btnStrokeSpeedMultiplierIncreaseClicked = false;
+        internal static bool btnStrokeSpeedMultiplierDecreaseClicked = false;
+        internal static bool btnLimitRobotStrokeLengthClicked = false;
 
         private static SerialPortConnection _serialPortConnection;
 
         private void SetupPluginConfigurations()
         {
             _serialPortConnection = SerialPortConnection.GetInstance();
-            // Setup config file entries used in the in game menu
             // Creates a config file in BepInEx/config named AC_SexRobotControllerPlugin.cfg
-            // general
+            // GENERAL
+            // WIP: Disable Plugin
+            //DisablePlugin = Config.Bind(StringConstants.SexRobotGeneralSection, StringConstants.DisablePlugin, false, new ConfigDescription(StringConstants.DisablePlugin_Tooltip));
+            // WIP: Disable Multiplier Buttons in Settings menu
+            //HideMultiplierButtonsInSettings = Config.Bind(StringConstants.SexRobotGeneralSection, StringConstants.HideSettingsMultiplierButtons, false, new ConfigDescription(StringConstants.HideSettingsMultiplierButtons_Tooltip));
             DiagnosticsConfig = Config.Bind(StringConstants.SexRobotGeneralSection, StringConstants.BepinExDebugOutput, false);
-            ReadAnimationsFromFile = Config.Bind(StringConstants.SexRobotGeneralSection, StringConstants.ReadAnimationsFromFile, false, new ConfigDescription(StringConstants.ReadAnimationsFromFile_Tooltip));
+            //ReadAnimationsFromFile = Config.Bind(StringConstants.SexRobotGeneralSection, StringConstants.ReadAnimationsFromFile, false, new ConfigDescription(StringConstants.ReadAnimationsFromFile_Tooltip));
             WriteAnimationsToFile = Config.Bind(StringConstants.SexRobotGeneralSection, StringConstants.WriteNotFoundPositionsToFile, false, new ConfigDescription(StringConstants.WriteNotFoundPositionsToFile_Tooltip));
-            // connection
-            ToggleSerialPortConnection = Config.Bind(StringConstants.SexRobotConnectionSection, StringConstants.ToggleSerialPortConnection, new KeyboardShortcut(KeyCode.S, KeyCode.LeftShift));
+
+            // KEYBOARD SHORTCUTS
+            ToggleSerialPortConnection = Config.Bind(StringConstants.SexRobotKeyboardShortcutsSection, StringConstants.ToggleSerialPortConnectionKey, new KeyboardShortcut(KeyCode.S, KeyCode.LeftShift));
+            StrokeLengthMultiplierIncrease = Config.Bind(StringConstants.SexRobotKeyboardShortcutsSection, StringConstants.IncreaseStrokeLengthMultiplierKey, new KeyboardShortcut(KeyCode.U));
+            StrokeLengthMultiplierDecrease = Config.Bind(StringConstants.SexRobotKeyboardShortcutsSection, StringConstants.DecreaseStrokeLengthMultiplierKey, new KeyboardShortcut(KeyCode.T));
+            StrokeSpeedMultiplierIncrease = Config.Bind(StringConstants.SexRobotKeyboardShortcutsSection, StringConstants.IncreaseStrokeSpeedMultiplierKey, new KeyboardShortcut(KeyCode.U, KeyCode.LeftShift));
+            StrokeSpeedMultiplierDecrease = Config.Bind(StringConstants.SexRobotKeyboardShortcutsSection, StringConstants.DecreaseStrokeSpeedMultiplierKey, new KeyboardShortcut(KeyCode.T, KeyCode.LeftShift));
+            TogglelimitRobotStrokeLength = Config.Bind(StringConstants.SexRobotKeyboardShortcutsSection, StringConstants.ToggleStrokeLengthLimiterKey, new KeyboardShortcut(KeyCode.Space));
+
+            // CONNECTION
+            SexRobotUpdateFrequencyConfig = Config.Bind(StringConstants.SexRobotConnectionSection, StringConstants.SexRobotUpdateFrequencyConfig, 30.0f, new ConfigDescription(StringConstants.SexRobotUpdateFrequencyConfig_Tooltip, new AcceptableValueRange<float>(1.0f, 120.0f)));
+            SerialPortStatus = Config.Bind(StringConstants.SexRobotConnectionSection, StringConstants.SerialPortStatus, StringConstants.SerialPortStatus_Tooltip);
             (SerialPortConfig = Config.Bind(StringConstants.SexRobotConnectionSection, StringConstants.SerialPortConfig, StringConstants.SerialPorts[0], new ConfigDescription(StringConstants.SerialPortConfig_Tooltip, new AcceptableValueList<string>(StringConstants.SerialPorts)))).SettingChanged += (s, e) =>
             {
                 _serialPortConnection.UpdateSerialPort();
             };
-            SexRobotUpdateFrequencyConfig = Config.Bind(StringConstants.SexRobotConnectionSection, StringConstants.SexRobotUpdateFrequencyConfig, 30.0f, new ConfigDescription(StringConstants.SexRobotUpdateFrequencyConfig_Tooltip, new AcceptableValueRange<float>(1.0f, 120.0f)));
-            SerialPortStatus = Config.Bind(StringConstants.SexRobotConnectionSection, StringConstants.SerialPortStatus, StringConstants.SerialPortStatus_Tooltip);
             SerialPortStatus.Value = SerialPortConfig.Value + StringConstants.SerialPortStatus_Disconnected;
             (SerialPortConnected = Config.Bind(StringConstants.SexRobotConnectionSection, StringConstants.SerialPortConnected, true)).SettingChanged += (s, e) =>
             {
                 _serialPortConnection.UpdateSerialPortConnection();
             };
-            //multipliers
-            StrokeLengthMultiplierIncrease = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.IncreaseStrokeMultiplierKey, new KeyboardShortcut(KeyCode.U));
-            StrokeLengthMultiplierDecrease = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.DecreaseStrokeMultiplierKey, new KeyboardShortcut(KeyCode.T));
-            RobotL0Multiplier = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.RobotL0Multiplier, 1.0f, new ConfigDescription(StringConstants.RobotL0Multiplier_Tooltip, new AcceptableValueRange<float>(0.25f, 5.0f)));
+
+            // L0 MULTIPLIERS
+            RobotL0LengthMultiplier = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.RobotL0IntensityMultiplier, RobotMovement.L0_DEFAULT_INTENSITY,
+                new ConfigDescription(StringConstants.RobotL0IntensityMultiplier_Tooltip, new AcceptableValueRange<float>(RobotMovement.L0_INTENSITY_MIN, RobotMovement.L0_INTENSITY_MAX)));
+            RobotL0SpeedMultiplier = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.RobotL0SpeedMultiplier, RobotMovement.L0_DEFAULT_MAXSPEED,
+                new ConfigDescription(StringConstants.RobotL0AmplifierMultiplier_Tooltip, new AcceptableValueRange<float>(RobotMovement.L0_MAXSPEED_MIN, RobotMovement.L0_MAXSPEED_MAX)));
             RobotL0MultiplierStepValue = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.RobotL0MultiplierStepValue, 0.25f, new ConfigDescription(StringConstants.RobotL0MultiplierStepValue_Tooltip, new AcceptableValueRange<float>(0.01f, 1.0f)));
-            RobotL0Min = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.RobotL0Min, 0.0f, new ConfigDescription(StringConstants.RobotL0Min_Tooltip, new AcceptableValueRange<float>(0.0f, 0.5f)));
-            RobotL0Max = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.RobotL0Max, 1.0f, new ConfigDescription(StringConstants.RobotL0Max_Tooltip, new AcceptableValueRange<float>(0.5f, 1.0f)));
-            RobotL1Min = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.RobotL1Min, 0.0f, new ConfigDescription(StringConstants.RobotL1Min_Tooltip, new AcceptableValueRange<float>(0.0f, 0.5f)));
-            RobotL1Max = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.RobotL1Max, 1.0f, new ConfigDescription(StringConstants.RobotL1Max_Tooltip, new AcceptableValueRange<float>(0.5f, 1.0f)));
-            RobotL2Min = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.RobotL2Min, 0.0f, new ConfigDescription(StringConstants.RobotL2Min_Tooltip, new AcceptableValueRange<float>(0.0f, 0.5f)));
-            RobotL2Max = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.RobotL2Max, 1.0f, new ConfigDescription(StringConstants.RobotL2Max_Tooltip, new AcceptableValueRange<float>(0.5f, 1.0f)));
-            RobotR0Min = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.RobotR0Min, 0.0f, new ConfigDescription(StringConstants.RobotR0Min_Tooltip, new AcceptableValueRange<float>(0.0f, 0.5f)));
-            RobotR0Max = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.RobotR0Max, 1.0f, new ConfigDescription(StringConstants.RobotR0Max_Tooltip, new AcceptableValueRange<float>(0.5f, 1.0f)));
-            RobotR1Min = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.RobotR1Min, 0.0f, new ConfigDescription(StringConstants.RobotR1Min_Tooltip, new AcceptableValueRange<float>(0.0f, 0.5f)));
-            RobotR1Max = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.RobotR1Max, 1.0f, new ConfigDescription(StringConstants.RobotR1Max_Tooltip, new AcceptableValueRange<float>(0.5f, 1.0f)));
-            RobotR2Min = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.RobotR2Min, 0.0f, new ConfigDescription(StringConstants.RobotR2Min_Tooltip, new AcceptableValueRange<float>(0.0f, 0.5f)));
-            RobotR2Max = Config.Bind(StringConstants.SexRobotLimitsSection, StringConstants.RobotR2Max, 1.0f, new ConfigDescription(StringConstants.RobotR2Max_Tooltip, new AcceptableValueRange<float>(0.5f, 1.0f)));
-            //limiter
-            TogglelimitRobotStrokeLength = Config.Bind(StringConstants.SexRobotLimiterSection, StringConstants.ToggleStrokeLengthLimiter, new KeyboardShortcut(KeyCode.Space));
-            LimitRobotL0Length = Config.Bind(StringConstants.SexRobotLimiterSection, StringConstants.StrokeLengthLimiter, false, new ConfigDescription(StringConstants.StrokeLengthLimiter_Tooltip));
-            LimitRobotL0Multiplier = Config.Bind(StringConstants.SexRobotLimiterSection, StringConstants.StrokeLengthLimiterMultiplierValue, 1.0f, new ConfigDescription(StringConstants.StrokeLengthLimiterMultiplierValue_Tooltip, new AcceptableValueRange<float>(0.25f, 5.0f)));
+
+            // L0 LIMITER (OPTIONAL)
+            LimitRobotL0Multipliers = Config.Bind(StringConstants.SexRobotLimiterSection, StringConstants.StrokeLengthLimiter, false, new ConfigDescription(StringConstants.StrokeLengthLimiter_Tooltip));
+            LimitRobotL0LengthMultiplier = Config.Bind(StringConstants.SexRobotLimiterSection, StringConstants.LimitRobotL0IntensityMultiplierValue, RobotMovement.L0_DEFAULT_INTENSITY,
+                new ConfigDescription(StringConstants.LimitRobotL0IntensityMultiplierValue_Tooltip, new AcceptableValueRange<float>(RobotMovement.L0_INTENSITY_MIN, RobotMovement.L0_INTENSITY_MAX)));
+            LimitRobotL0SpeedMultiplier = Config.Bind(StringConstants.SexRobotLimiterSection, StringConstants.LimitRobotL0SpeedMultiplierValue, RobotMovement.L0_DEFAULT_MAXSPEED,
+                new ConfigDescription(StringConstants.LimitRobotL0SpeedMultiplierValue_Tooltip, new AcceptableValueRange<float>(RobotMovement.L0_MAXSPEED_MIN, RobotMovement.L0_MAXSPEED_MAX)));
+
+            // MIN/MAX: L0, L1, L2, R0, R1, R2
+            RobotL0Min = Config.Bind(StringConstants.SexRobotMinMaxSection, StringConstants.RobotL0Min, 0.0f, new ConfigDescription(StringConstants.RobotL0Min_Tooltip, new AcceptableValueRange<float>(0.0f, 0.5f)));
+            RobotL0Max = Config.Bind(StringConstants.SexRobotMinMaxSection, StringConstants.RobotL0Max, 1.0f, new ConfigDescription(StringConstants.RobotL0Max_Tooltip, new AcceptableValueRange<float>(0.5f, 1.0f)));
+            RobotL1Min = Config.Bind(StringConstants.SexRobotMinMaxSection, StringConstants.RobotL1Min, 0.0f, new ConfigDescription(StringConstants.RobotL1Min_Tooltip, new AcceptableValueRange<float>(0.0f, 0.5f)));
+            RobotL1Max = Config.Bind(StringConstants.SexRobotMinMaxSection, StringConstants.RobotL1Max, 1.0f, new ConfigDescription(StringConstants.RobotL1Max_Tooltip, new AcceptableValueRange<float>(0.5f, 1.0f)));
+            RobotL2Min = Config.Bind(StringConstants.SexRobotMinMaxSection, StringConstants.RobotL2Min, 0.0f, new ConfigDescription(StringConstants.RobotL2Min_Tooltip, new AcceptableValueRange<float>(0.0f, 0.5f)));
+            RobotL2Max = Config.Bind(StringConstants.SexRobotMinMaxSection, StringConstants.RobotL2Max, 1.0f, new ConfigDescription(StringConstants.RobotL2Max_Tooltip, new AcceptableValueRange<float>(0.5f, 1.0f)));
+            RobotR0Min = Config.Bind(StringConstants.SexRobotMinMaxSection, StringConstants.RobotR0Min, 0.0f, new ConfigDescription(StringConstants.RobotR0Min_Tooltip, new AcceptableValueRange<float>(0.0f, 0.5f)));
+            RobotR0Max = Config.Bind(StringConstants.SexRobotMinMaxSection, StringConstants.RobotR0Max, 1.0f, new ConfigDescription(StringConstants.RobotR0Max_Tooltip, new AcceptableValueRange<float>(0.5f, 1.0f)));
+            RobotR1Min = Config.Bind(StringConstants.SexRobotMinMaxSection, StringConstants.RobotR1Min, 0.0f, new ConfigDescription(StringConstants.RobotR1Min_Tooltip, new AcceptableValueRange<float>(0.0f, 0.5f)));
+            RobotR1Max = Config.Bind(StringConstants.SexRobotMinMaxSection, StringConstants.RobotR1Max, 1.0f, new ConfigDescription(StringConstants.RobotR1Max_Tooltip, new AcceptableValueRange<float>(0.5f, 1.0f)));
+            RobotR2Min = Config.Bind(StringConstants.SexRobotMinMaxSection, StringConstants.RobotR2Min, 0.0f, new ConfigDescription(StringConstants.RobotR2Min_Tooltip, new AcceptableValueRange<float>(0.0f, 0.5f)));
+            RobotR2Max = Config.Bind(StringConstants.SexRobotMinMaxSection, StringConstants.RobotR2Max, 1.0f, new ConfigDescription(StringConstants.RobotR2Max_Tooltip, new AcceptableValueRange<float>(0.5f, 1.0f)));
 
             // if enabled, attempt to automatically connect when game is started
             if (SerialPortConnected.Value)
@@ -119,15 +149,15 @@ namespace AC_SexRobotController.Plugin
             try
             {
                 // Create robot stroke multiplier increase button
-                buttonLimitRobotStrokeLength = Object.Instantiate(btnOriginal, btnOriginal.parent).transform;
-                buttonLimitRobotStrokeLength.name = StringConstants.ButtonStrokeLengthLimiter_Name;
-                buttonLimitRobotStrokeLengthText = buttonLimitRobotStrokeLength.GetComponentInChildren<TextMeshProUGUI>();
-                Button newButton = buttonLimitRobotStrokeLength.GetComponentInChildren<Button>();
+                buttonLimitStrokeMultipliers = Object.Instantiate(btnOriginal, btnOriginal.parent).transform;
+                buttonLimitStrokeMultipliers.name = StringConstants.ButtonLimitStrokeMultiplier_Name;
+                buttonLimitStrokeMultipliersText = buttonLimitStrokeMultipliers.GetComponentInChildren<TextMeshProUGUI>();
+                Button newButton = buttonLimitStrokeMultipliers.GetComponentInChildren<Button>();
                 newButton.onClick.RemoveAllListeners();
                 newButton.interactable = true;
                 (newButton.onClick ??= new()).AddListener((UnityAction)new System.Action(() =>
                 {
-                    buttonLimitRobotStrokeLengthClicked = true;
+                    btnLimitRobotStrokeLengthClicked = true;
                 }));
 
             }
@@ -157,53 +187,81 @@ namespace AC_SexRobotController.Plugin
                 {
                     if (SerialPortConnected.Value)
                     {
-                        buttonDisconnectRobotClicked = true;
+                        btnDisconnectRobotClicked = true;
                     }
                     else
                     {
-                        buttonConnectRobotClicked = true;
+                        btnConnectRobotClicked = true;
                     }
                 }));
 
-                // Create robot stroke multiplier increase button
-                buttonStrokeMultiplierIncrease = Object.Instantiate(btnController, btnController.parent).transform;
-                buttonStrokeMultiplierIncrease.name = StringConstants.ButtonIncreaseStrokeLength_Name;
-                buttonStrokeMultiplierIncreaseText = buttonStrokeMultiplierIncrease.GetComponentInChildren<TextMeshProUGUI>();
-                buttonStrokeMultiplierIncreaseText.text = StringConstants.ButtonIncreaseStrokeLength_Text;
-                buttonStrokeMultiplierIncreaseText.fontSize = 18;
-                newButton = buttonStrokeMultiplierIncrease.GetComponentInChildren<Button>();
+                // Create robot stroke length multiplier increase button
+                buttonStrokeLengthMultiplierIncrease = Object.Instantiate(btnController, btnController.parent).transform;
+                buttonStrokeLengthMultiplierIncrease.name = StringConstants.ButtonIncreaseStrokeLength_Name;
+                buttonStrokeLengthMultiplierIncreaseText = buttonStrokeLengthMultiplierIncrease.GetComponentInChildren<TextMeshProUGUI>();
+                buttonStrokeLengthMultiplierIncreaseText.text = StringConstants.ButtonIncreaseStrokeLength_Text;
+                buttonStrokeLengthMultiplierIncreaseText.fontSize = 18;
+                newButton = buttonStrokeLengthMultiplierIncrease.GetComponentInChildren<Button>();
                 newButton.onClick.RemoveAllListeners();
                 newButton.interactable = true;
                 (newButton.onClick ??= new()).AddListener((UnityAction)new System.Action(() =>
                 {
-                    buttonStrokeMultiplierIncreaseClicked = true;
+                    btnStrokeLengthMultiplierIncreaseClicked = true;
                 }));
 
-                // Create robot stroke multiplier decrease button 
-                buttonStrokeMultiplierDecrease = Object.Instantiate(btnController, btnController.parent).transform;
-                buttonStrokeMultiplierDecrease.name = StringConstants.ButtonDecreaseStrokeLength_Name;
-                buttonStrokeMultiplierDecreaseText = buttonStrokeMultiplierDecrease.GetComponentInChildren<TextMeshProUGUI>();
-                buttonStrokeMultiplierDecreaseText.text = StringConstants.ButtonDecreaseStrokeLength_Text;
-                buttonStrokeMultiplierDecreaseText.fontSize = 18;
-                newButton = buttonStrokeMultiplierDecrease.GetComponentInChildren<Button>();
+                // Create robot stroke length multiplier decrease button 
+                buttonStrokeLengthMultiplierDecrease = Object.Instantiate(btnController, btnController.parent).transform;
+                buttonStrokeLengthMultiplierDecrease.name = StringConstants.ButtonDecreaseStrokeLength_Name;
+                buttonStrokeLengthMultiplierDecreaseText = buttonStrokeLengthMultiplierDecrease.GetComponentInChildren<TextMeshProUGUI>();
+                buttonStrokeLengthMultiplierDecreaseText.text = StringConstants.ButtonDecreaseStrokeLength_Text;
+                buttonStrokeLengthMultiplierDecreaseText.fontSize = 18;
+                newButton = buttonStrokeLengthMultiplierDecrease.GetComponentInChildren<Button>();
                 newButton.onClick.RemoveAllListeners();
                 newButton.interactable = true;
                 (newButton.onClick ??= new()).AddListener((UnityAction)new System.Action(() =>
                 {
-                    buttonStrokeMultiplierDecreaseClicked = true;
+                    btnStrokLengthMultiplierDecreaseClicked = true;
                 }));
 
-                //create button for speed limitation
-                buttonLimitRobotStrokeLength = Object.Instantiate(btnController, btnController.parent).transform;
-                buttonLimitRobotStrokeLength.name = StringConstants.ButtonStrokeLengthLimiter_Name;
-                buttonLimitRobotStrokeLengthText = buttonLimitRobotStrokeLength.GetComponentInChildren<TextMeshProUGUI>();
-                buttonLimitRobotStrokeLengthText.text = StringConstants.ButtonStrokeLengthLimiter_Text;
-                buttonLimitRobotStrokeLengthText.fontSize = 20;
-                newButton = buttonLimitRobotStrokeLength.GetComponentInChildren<Button>();
+                // Create robot stroke speed multiplier increase button
+                buttonStrokeSpeedMultiplierIncrease = Object.Instantiate(btnController, btnController.parent).transform;
+                buttonStrokeSpeedMultiplierIncrease.name = StringConstants.ButtonIncreaseStrokeSpeed_Name;
+                buttonStrokeSpeedMultiplierIncreaseText = buttonStrokeSpeedMultiplierIncrease.GetComponentInChildren<TextMeshProUGUI>();
+                buttonStrokeSpeedMultiplierIncreaseText.text = StringConstants.ButtonIncreaseStrokeSpeed_Text;
+                buttonStrokeSpeedMultiplierIncreaseText.fontSize = 18;
+                newButton = buttonStrokeSpeedMultiplierIncrease.GetComponentInChildren<Button>();
+                newButton.onClick.RemoveAllListeners();
                 newButton.interactable = true;
                 (newButton.onClick ??= new()).AddListener((UnityAction)new System.Action(() =>
                 {
-                    buttonLimitRobotStrokeLengthClicked = true;
+                    btnStrokeSpeedMultiplierIncreaseClicked = true;
+                }));
+
+                // Create robot stroke speed multiplier decrease button 
+                buttonStrokeSpeedMultiplierDecrease = Object.Instantiate(btnController, btnController.parent).transform;
+                buttonStrokeSpeedMultiplierDecrease.name = StringConstants.ButtonDecreaseStrokeSpeed_Name;
+                buttonStrokeSpeedMultiplierDecreaseText = buttonStrokeSpeedMultiplierDecrease.GetComponentInChildren<TextMeshProUGUI>();
+                buttonStrokeSpeedMultiplierDecreaseText.text = StringConstants.ButtonDecreaseStrokeSpeed_Text;
+                buttonStrokeSpeedMultiplierDecreaseText.fontSize = 18;
+                newButton = buttonStrokeSpeedMultiplierDecrease.GetComponentInChildren<Button>();
+                newButton.onClick.RemoveAllListeners();
+                newButton.interactable = true;
+                (newButton.onClick ??= new()).AddListener((UnityAction)new System.Action(() =>
+                {
+                    btnStrokeSpeedMultiplierDecreaseClicked = true;
+                }));
+
+                // Create button for switching L0 multipliers (dynamic switching between softer and intenser animations)
+                buttonLimitStrokeMultipliers = Object.Instantiate(btnConnect, btnConnect.parent).transform;
+                buttonLimitStrokeMultipliers.name = StringConstants.ButtonLimitStrokeMultiplier_Name;
+                buttonLimitStrokeMultipliersText = buttonLimitStrokeMultipliers.GetComponentInChildren<TextMeshProUGUI>();
+                buttonLimitStrokeMultipliersText.text = StringConstants.ButtonLimitStrokeMultiplier_Text;
+                buttonLimitStrokeMultipliersText.fontSize = 20;
+                newButton = buttonLimitStrokeMultipliers.GetComponentInChildren<Button>();
+                newButton.interactable = true;
+                (newButton.onClick ??= new()).AddListener((UnityAction)new System.Action(() =>
+                {
+                    btnLimitRobotStrokeLengthClicked = true;
                 }));
             }
             catch (System.Exception ex)

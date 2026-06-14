@@ -8,57 +8,48 @@ using System.Linq;
 using UnityEngine;
 using static H.HScene;
 
-// List of items to implement/test:
-// - Increasement of movement
-// - 3P: 2F1M
-// - 3P: 1F2M
-// - 5P: ???
-// - VR (may not work, due to the BepinEx currently not working there) => v2.0 Feature
-
 namespace AC_SexRobotController.RobotController
 {
-    public sealed class SexRobotController : MonoBehaviour
+    internal sealed class SexRobotController : MonoBehaviour
     {
         internal static SexRobotController? Instance { get; private set; }
 
-        private int _loopType;
         private HScene? HScene;
-        private Stopwatch _sw = Stopwatch.StartNew();
         private static RobotMovement? _robotMovement;
+        private readonly Stopwatch _sw = Stopwatch.StartNew();
 
         internal void SetHScene(HScene _hScene)
         {
-            HScene = _hScene;
+            this.HScene = _hScene;
 
-            if (HScene.NowAnimationInfo.NameAnimation != null
-                && HScene.NowAnimationInfo.NameAnimation != ""
-                && HScene.NowAnimationInfo.NameAnimation != RobotMovement.GetInstance().AnimationName)
-            {
-                UpdateRobotMovement(HScene.NowAnimationInfo.NameAnimation);
-            }
+            if (this.HScene.NowAnimationInfo.NameAnimation != null
+                && this.HScene.NowAnimationInfo.NameAnimation != ""
+                && this.HScene.NowAnimationInfo.NameAnimation != RobotMovement.GetInstance().AnimationName)
+                UpdateRobotMovement(this.HScene);
 
             // since a new HScene is being created, check if the button has already been added to the current Scene Object
             Transform? btnLimiter = null;
             try
             {
-                btnLimiter = HScene.transform.FindLoop(StringConstants.ButtonStrokeLengthLimiter_Name).transform;
+                btnLimiter = HScene.transform.FindLoop(StringConstants.ButtonLimitStrokeMultiplier_Name).transform;
             }
             catch (System.Exception)
             {
             }
             // if it doesn't exist, add it to the scene Object
             if (btnLimiter == null)
-                AC_SexRobotControllerPlugin.CreateSceneButton(HScene.transform.FindLoop("btnConfig").transform);
+                AC_SexRobotControllerPlugin.CreateSceneButton(HScene.transform.FindLoop(StringConstants.SCENE_CONFIG_BUTTON).transform);
         }
 
-        private static void UpdateRobotMovement(string animationName)
+        private static void UpdateRobotMovement(HScene hScene)
         {
             _robotMovement = RobotMovement.GetInstance();
+            _robotMovement.LoopType = hScene.CtrlFlag.LoopType;
+            _robotMovement.AnimationSpeed = hScene.CtrlFlag.Speed;
             _robotMovement.PrevAnimationName = _robotMovement.AnimationName;
-            _robotMovement.AnimationName = animationName;
-            _robotMovement.AnimationChanged = true;
+            _robotMovement.AnimationName = hScene.NowAnimationInfo.NameAnimation;
             _robotMovement.UpdatePosition = false;
-            _robotMovement.SpeedChanged = false;
+            _robotMovement.AnimationChanged = true;
         }
 
         internal void ReadBodyPosition()
@@ -142,12 +133,11 @@ namespace AC_SexRobotController.RobotController
         {
             if (Instance == this)
             {
-                RobotMovement.GetInstance().AnimationChanged = false;
-                RobotMovement.GetInstance().SpeedChanged = false;
+                _sw.Reset();
+                this.HScene = null;
                 RobotMovement.GetInstance().UpdatePosition = false;
+                RobotMovement.GetInstance().AnimationChanged = false;
                 Instance = null;
-                HScene = null;
-                _sw.Stop();
             }
         }
 
@@ -159,7 +149,7 @@ namespace AC_SexRobotController.RobotController
                 SerialPortConnection.GetInstance().CheckButtonAndSerialConnState();
 
                 // Return if not in an HScene
-                if (HScene == null)
+                if (this.HScene == null)
                     return;
 
                 // Get ms elapsed since current stopwatch interval
@@ -171,27 +161,25 @@ namespace AC_SexRobotController.RobotController
                     _sw.Stop();
 
                     // check if the animation has changed
-                    if (_robotMovement.AnimationName != HScene.NowAnimationInfo.NameAnimation)
-                    {
-                        UpdateRobotMovement(HScene.NowAnimationInfo.NameAnimation);
-                    }
-                    // check here if the speed was changed - this is required to account for:
-                    // - continuing after last finish
-                    // - pulling out and re-inserting
-                    // - moving faster/slower, which might change the the depth
-                    else if (_loopType != HScene.CtrlFlag.LoopType && !_robotMovement.AnimationChanged)
-                    {
-                        _robotMovement.SpeedChanged = true;
-                        _loopType = HScene.CtrlFlag.LoopType;
-                    }
-
+                    if (_robotMovement.AnimationName != this.HScene.NowAnimationInfo.NameAnimation)
+                        UpdateRobotMovement(this.HScene);
+                    // TODO: HScene.CtrlFlag.NowSpeedStateFast
+                    // Maybe use this to "fix" speed issues? if set, then Speed = Speed*2
+                    // Lowest: 0
+                    // Fastest: 1
+                    // => 0*2=0
+                    // => 0.5*2=1
+                    // => 1*2=2
+                    _robotMovement.LoopType = this.HScene.CtrlFlag.LoopType;
+                    _robotMovement.AnimationSpeed = this.HScene.CtrlFlag.Speed;
+                    _robotMovement.IsNowOrgasm = this.HScene.CtrlFlag.IsNowOrgasm;
                     _robotMovement.UpdateAnimationStatus();
-                    _sw = Stopwatch.StartNew();
+                    _sw.Restart();
                 }
             }
             catch (System.Exception ex)
             {
-                AC_SexRobotControllerPlugin.LogDebug("ERROR (UPDATE()): " + ex.ToString());
+                AC_SexRobotControllerPlugin.LogDebug("Error (Update()): " + ex.ToString());
             }
         }
     }
